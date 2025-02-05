@@ -1,0 +1,8 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.UberDriver" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:fontFamily">@font/haborosans_normlight</item>
+    </style>
+
+    <style name="Theme.UberDriver" parent="Base.Theme.UberDriver" />
+</resources>
