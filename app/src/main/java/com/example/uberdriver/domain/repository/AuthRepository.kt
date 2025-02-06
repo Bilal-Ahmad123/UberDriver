@@ -1,7 +1,10 @@
 package com.example.uberdriver.domain.repository
 import com.example.uberdriver.data.remote.api.backend.authentication.api.AuthenticationService
 import com.example.uberdriver.data.remote.api.backend.authentication.mapper.toDomain
+import com.example.uberdriver.data.remote.api.backend.authentication.model.request.CreateDriverReq
+import com.example.uberdriver.data.remote.api.backend.authentication.model.request.CreateDriverRequest
 import com.example.uberdriver.data.remote.api.backend.authentication.repository.AuthRepository
+import com.example.uberdriver.domain.backend.authentication.model.response.CreateDriver
 import com.example.uberdriver.domain.backend.authentication.model.response.DriverExists
 import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.firebase.auth.FirebaseAuth
@@ -36,6 +39,15 @@ class AuthRepository @Inject constructor(private val api:AuthenticationService):
             Response.success(user)
         } catch (exp: Exception) {
             Response.error(500, ResponseBody.create(null, "Network error: ${exp.localizedMessage}"))
+        }
+    }
+
+    override suspend fun createDriver(driver: CreateDriverRequest): Response<CreateDriver> {
+        return try {
+            Response.success(api.createDriver(CreateDriverReq(driver)).body()?.toDomain())
+        }
+        catch (e:Exception){
+            Response.error(500,ResponseBody.create(null, "Network error: ${e.localizedMessage}"))
         }
     }
 }
