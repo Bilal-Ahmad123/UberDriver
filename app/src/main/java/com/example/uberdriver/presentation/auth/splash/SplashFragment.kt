@@ -7,18 +7,29 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import com.example.uberdriver.R
+import com.example.uberdriver.presentation.auth.login.viewmodels.LoginViewModel
+import com.example.uberdriver.presentation.splash.SplashActivity
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.FirebaseApp
+import dagger.hilt.android.AndroidEntryPoint
+import com.example.uberdriver.core.common.Resource
 
+@AndroidEntryPoint
 class SplashFragment : Fragment() {
 
+    private val _loginViewModel: LoginViewModel by activityViewModels()
     private var oneTapClient: SignInClient? = null
     private var signInRequest: BeginSignInRequest? = null
     private val RC_SIGN_IN = 2
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +41,19 @@ class SplashFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_splash, container, false)
+    }
+
+    override fun onDestroyView() {
+        oneTapClient = null
+        signInRequest = null
+        super.onDestroyView()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        navController = findNavController()
+        startIdentityIntent()
+        signInWithOneTap()
     }
 
     private fun startIdentityIntent(){
@@ -82,6 +106,45 @@ class SplashFragment : Fragment() {
                 }
             } catch (e: ApiException) {
                 Log.e("OneTap", "One Tap Sign-In failed: ${e.localizedMessage}")
+            }
+        }
+    }
+
+    private fun observeUserLogin() {
+        _loginViewModel.apply {
+            user.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    it.data?.email?.let { email ->
+                        _loginViewModel.checkIfUserExists(email)
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Authentication failed", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+    }
+
+    private fun observerUserExistsStatus() {
+        _loginViewModel.apply {
+            userExists.observe(viewLifecycleOwner) { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        val data = resource.data
+                        data?.let {
+                            if (data.driverExists) {
+                                startActivity(Intent(requireContext(), SplashActivity::class.java))
+                                requireActivity().finish()
+                            } else {
+                                val bundle = Bundle()
+                                bundle.putString("displayName",_loginViewModel.user.value?.data?.displayName)
+                                navController.navigate(R.id.action_splashFragment_to_registerDetailsFragment,bundle)
+                            }
+                        }
+                    }
+                    else -> {
+                    }
+                }
             }
         }
     }

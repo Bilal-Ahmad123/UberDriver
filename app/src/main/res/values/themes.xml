@@ -5,4 +5,9 @@
     </style>
 
     <style name="Theme.UberDriver" parent="Base.Theme.UberDriver" />
+
+    <style name="Widget.App.CircularProgressIndicator" parent="Widget.MaterialComponents.CircularProgressIndicator">
+        <item name="materialThemeOverlay">@color/light_blue_A400</item>
+        <item name="trackThickness">@dimen/_1sdp</item>
+    </style>
 </resources>

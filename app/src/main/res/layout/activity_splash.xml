@@ -13,14 +13,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:textSize="@dimen/_70ssp"
+        android:textSize="@dimen/_50ssp"
         android:layout_gravity="center"
         android:fontFamily="@font/custom_font"
         android:text="Uber" />
     <ImageView
         android:id="@+id/iv_arrow"
         android:layout_marginTop="-20dp"
-        android:layout_marginEnd="@dimen/_50sdp"
+        android:layout_marginEnd="@dimen/_40sdp"
         android:layout_width="wrap_content"
         android:layout_gravity="center"
         android:layout_height="wrap_content"

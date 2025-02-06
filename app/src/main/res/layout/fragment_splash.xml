@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/black"
+    android:gravity="center"
     tools:context=".presentation.auth.splash.SplashFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_50ssp"
+        android:layout_gravity="center"
+        android:fontFamily="@font/custom_font"
+        android:text="Uber" />
+    <ImageView
+        android:id="@+id/iv_arrow"
+        android:layout_marginTop="-20dp"
+        android:layout_marginEnd="@dimen/_40sdp"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_arrow_forward_24"/>
 
-</FrameLayout>
+</LinearLayout>

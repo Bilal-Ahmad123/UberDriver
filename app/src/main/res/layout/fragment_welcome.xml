@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".presentation.auth.login.ui.WelcomeFragment">
+    tools:context=".presentation.auth.welcome.ui.WelcomeFragment">
 
     <com.smarteist.autoimageslider.SliderView
         android:id="@+id/imageSlider"
@@ -32,7 +32,7 @@
             android:textSize="@dimen/_27ssp" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/sign_in_with_google"
+            android:id="@+id/mb_continue"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_50sdp"
             android:layout_marginTop="@dimen/_10sdp"
@@ -44,6 +44,7 @@
             android:textStyle="bold"
             app:backgroundTint="@color/black"
             app:cornerRadius="@dimen/_5sdp" />
+
     </LinearLayout>
 
 </LinearLayout>

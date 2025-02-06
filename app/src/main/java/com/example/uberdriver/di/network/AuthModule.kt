@@ -1,6 +1,6 @@
 package com.example.uberdriver.di.network
 
-import com.example.uberdriver.common.Constants_Api
+import com.example.uberdriver.core.common.Constants_Api
 import com.example.uberdriver.data.remote.api.backend.authentication.api.AuthenticationService
 import com.example.uberdriver.data.remote.api.backend.authentication.repository.AuthRepository
 import dagger.Module

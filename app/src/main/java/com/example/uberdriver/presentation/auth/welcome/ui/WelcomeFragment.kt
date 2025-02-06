@@ -1,10 +1,11 @@
-package com.example.uberdriver.presentation.auth.login.ui
+package com.example.uberdriver.presentation.auth.welcome.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.uberdriver.R
 import com.example.uberdriver.databinding.FragmentWelcomeBinding
 import com.example.uberdriver.presentation.auth.login.adapter.SliderAdapter
@@ -26,10 +27,16 @@ class WelcomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setImageSlider()
+        onContinueBtnClickListener()
+    }
+
+    private fun setImageSlider(){
         val imageList = listOf(
             SliderItem(R.drawable.car),
             SliderItem(R.drawable.lady)
         )
+
         binding?.imageSlider?.apply {
             setSliderAdapter(SliderAdapter(requireContext(), imageList))
             autoCycleDirection = SliderView.LAYOUT_DIRECTION_LTR;
@@ -37,7 +44,6 @@ class WelcomeFragment : Fragment() {
             startAutoCycle();
             setCurrentPageListener(imageSliderChangeListener)
         }
-
     }
 
     private val imageSliderChangeListener = object : SliderView.OnSliderPageListener {
@@ -54,6 +60,12 @@ class WelcomeFragment : Fragment() {
         super.onDestroyView()
         binding?.imageSlider?.setCurrentPageListener(null)
         binding = null
+    }
+
+    private fun onContinueBtnClickListener(){
+        binding?.mbContinue?.setOnClickListener {
+            findNavController().navigate(R.id.action_welcomeFragment_to_loginFragment)
+        }
     }
 
 

@@ -2,4 +2,5 @@
     <string name="app_name">UberDriver</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="default_web_client_id">364733509853-m8d40h84934fitabuos2p46lr8p5ck3b.apps.googleusercontent.com</string>
 </resources>

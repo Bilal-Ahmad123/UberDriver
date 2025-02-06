@@ -30,7 +30,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun translateToRight() {
-        AnimationManager.translateToRight(binding?.ivArrow!!,3000){
+        AnimationManager.translateToRight(binding?.ivArrow!!,2000){
             if(it){
                 startActivity(Intent(this, AuthActivity::class.java))
                 finish()

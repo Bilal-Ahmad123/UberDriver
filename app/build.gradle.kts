@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.firebase.auth.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -74,4 +75,9 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:2.46.1")
     kapt("com.google.dagger:hilt-compiler:2.46.1")
+
+    implementation("io.michaelrocks:libphonenumber-android:8.12.44")
+    implementation("com.github.joielechong:countrycodepicker:2.4.2")
+
+    implementation("com.mobsandgeeks:android-saripaar:2.0.3")
 }
