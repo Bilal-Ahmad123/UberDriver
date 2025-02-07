@@ -23,6 +23,7 @@ import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -35,7 +36,7 @@ class TermsAndReviewFragment : Fragment() {
     private lateinit var button: MaterialButton
     private lateinit var noButton: MaterialButton
     private var _bottomSheet: GenericBottomSheet? = null
-    private val _registerViewModel: RegisterViewModel by viewModels()
+    private val _registerViewModel: RegisterViewModel by activityViewModels<RegisterViewModel>()
     private val _loginViewModel: LoginViewModel by activityViewModels<LoginViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,11 +117,11 @@ class TermsAndReviewFragment : Fragment() {
 
     private fun nextBtnClickListener() {
         _binding?.filledTonalButton?.setOnClickListener {
-            createRider()
+            createDriver()
         }
     }
 
-    private fun createRider() {
+    private fun createDriver() {
         showProgressBar()
         _registerViewModel.createDriver(createRiderRequestObject())
     }
@@ -136,15 +137,13 @@ class TermsAndReviewFragment : Fragment() {
 
 
     private fun observerCreateRiderResponse() {
-        with(_registerViewModel) {
-            user.observe(viewLifecycleOwner) {
-                if (it.data != null) {
-                    val intent = Intent(
-                        requireContext(),
-                        SplashActivity::class.java
-                    )
-                    startActivity(intent)
-                    requireActivity().finish()
+        viewLifecycleOwner.lifecycleScope.launch {
+            with(_registerViewModel) {
+                user.collectLatest {
+                    if (it?.data != null) {
+                        hideProgressBar()
+                        navController.navigate(R.id.action_termsAndReviewFragment_to_vehicleRegisterFragment)
+                    }
                 }
             }
         }

@@ -37,7 +37,6 @@ class LoginViewModel @Inject constructor(
     }
 
     fun checkIfUserExists(email: String) {
-        Log.e("CheckUserExists", "Here")
         launchOnBack {
             _userExists.emit(Resource.Loading())
             val result = checkDriverExistsUseCase(email)

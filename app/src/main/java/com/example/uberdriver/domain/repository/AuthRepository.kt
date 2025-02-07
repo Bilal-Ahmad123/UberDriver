@@ -1,4 +1,5 @@
 package com.example.uberdriver.domain.repository
+import android.util.Log
 import com.example.uberdriver.data.remote.api.backend.authentication.api.AuthenticationService
 import com.example.uberdriver.data.remote.api.backend.authentication.mapper.toDomain
 import com.example.uberdriver.data.remote.api.backend.authentication.model.request.CreateDriverReq

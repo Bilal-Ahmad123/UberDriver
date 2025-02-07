@@ -17,16 +17,16 @@ class AuthModule {
     @Provides
     @Singleton
     fun provideAuthenticationServiceImpl(): AuthenticationService {
-        return Retrofit.Builder().baseUrl(Constants_Api.BACKEND_API)
+        return Retrofit.Builder().baseUrl(Constants_Api.BACKEND_AUTH_API)
             .addConverterFactory(GsonConverterFactory.create()).build()
             .create(AuthenticationService::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideAuthRepositoryImpl(): AuthRepository {
+    fun provideAuthRepositoryImpl(api:AuthenticationService): AuthRepository {
         return com.example.uberdriver.domain.repository.AuthRepository(
-            provideAuthenticationServiceImpl()
+            api
         )
     }
 }

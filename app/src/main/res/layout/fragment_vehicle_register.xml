@@ -8,148 +8,175 @@
     android:background="@color/white"
     android:padding="@dimen/_7sdp">
 
-    <TextView
-        android:id="@+id/tv_register"
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressBar_cyclic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register your vehicle"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_25ssp"
-        android:fontFamily="@font/haborosans_bold"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerInParent="true"
+        android:layout_weight="1"
+        app:indicatorColor="@color/royal_blue"
+        android:indeterminate="true"
+        app:trackThickness="@dimen/_1sdp"
+        app:trackColor="@color/grey"
+        android:visibility="gone"
+        app:indicatorSize="@dimen/_100sdp" />
 
-    <ScrollView
+    <LinearLayout
+        android:id="@+id/ll_vehicle_details"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/tv_register"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:fillViewport="true">
+        android:orientation="vertical"
+        android:visibility="visible">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+
+        <TextView
+            android:id="@+id/tv_register"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            android:orientation="vertical">
+            android:fontFamily="@font/haborosans_bold"
+            android:text="Register your vehicle"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_25ssp" />
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tv_register"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:fillViewport="true">
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Vehicle Type"
-                app:boxStrokeColor="@color/purple_500"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/purple_500">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Vehicle Model"
-                app:boxStrokeColor="@color/purple_500"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/purple_500">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Vehicle Plate Number"
-                app:boxStrokeColor="@color/purple_500"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/purple_500">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Vehicle Color"
-                app:boxStrokeColor="@color/purple_500"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/purple_500">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Vehicle Year"
-                app:boxStrokeColor="@color/purple_500"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/purple_500">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Vehicle Make"
-                app:boxStrokeColor="@color/purple_500"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/purple_500">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/mb_continue"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_50sdp"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:fontFamily="@font/haborosans_bold"
-                android:letterSpacing="0"
-                android:text="Submit"
-                android:textAllCaps="false"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_15ssp"
-                android:textStyle="bold"
-                app:backgroundTint="@color/black"
-                app:cornerRadius="@dimen/_5sdp" />
-        </LinearLayout>
-    </ScrollView>
+                android:orientation="vertical">
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_vehicleType"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Vehicle Type"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:endIconMode="clear_text"
+                    app:endIconTint="@color/purple_500">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_vehicleModel"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Vehicle Model"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:endIconMode="clear_text"
+                    app:endIconTint="@color/purple_500">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_vehicle_number"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Vehicle Plate Number"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:endIconMode="clear_text"
+                    app:endIconTint="@color/purple_500">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_vehicle_color"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Vehicle Color"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:endIconMode="clear_text"
+                    app:endIconTint="@color/purple_500">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_vehicle_year"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Vehicle Year"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:endIconMode="clear_text"
+                    app:endIconTint="@color/purple_500">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ti_vehicle_make"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:hint="Vehicle Make"
+                    app:boxStrokeColor="@color/purple_500"
+                    app:endIconMode="clear_text"
+                    app:endIconTint="@color/purple_500">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/mb_continue"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:fontFamily="@font/haborosans_bold"
+                    android:letterSpacing="0"
+                    android:text="Submit"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_15ssp"
+                    android:textStyle="bold"
+                    app:backgroundTint="@color/black"
+                    app:cornerRadius="@dimen/_5sdp" />
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
 </RelativeLayout>

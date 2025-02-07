@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import java.util.UUID
 
 data class CheckDriverExistsResponse(
-    @SerializedName("DriverExists") val driverId: UUID
+    @SerializedName("driverExists") val driverId: UUID
 )
 
 

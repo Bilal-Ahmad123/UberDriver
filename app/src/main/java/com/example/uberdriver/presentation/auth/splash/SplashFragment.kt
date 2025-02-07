@@ -25,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @AndroidEntryPoint
 class SplashFragment : Fragment() {
@@ -125,7 +126,6 @@ class SplashFragment : Fragment() {
                 user
                     .collectLatest {
                         if (it != null) {
-                            Log.e("User", "Here Again")
                             it.data?.email?.let { email ->
                                 _loginViewModel.checkIfUserExists(email)
                             }
@@ -150,7 +150,7 @@ class SplashFragment : Fragment() {
                         is Resource.Success -> {
                             val data = resource.data
                             data?.let {
-                                if (it.driverId != null) {
+                                if (it.driverId != UUID(0,0)) {
                                     startActivity(
                                         Intent(
                                             requireContext(),
