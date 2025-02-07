@@ -3,15 +3,17 @@ package com.example.uberdriver.presentation.auth.splash
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.uberdriver.R
+import com.example.uberdriver.core.common.Resource
 import com.example.uberdriver.presentation.auth.login.viewmodels.LoginViewModel
 import com.example.uberdriver.presentation.splash.SplashActivity
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -20,7 +22,9 @@ import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
-import com.example.uberdriver.core.common.Resource
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SplashFragment : Fragment() {
@@ -30,6 +34,8 @@ class SplashFragment : Fragment() {
     private var signInRequest: BeginSignInRequest? = null
     private val RC_SIGN_IN = 2
     private lateinit var navController: NavController
+    private var job: Job? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,9 +50,10 @@ class SplashFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        super.onDestroyView()
         oneTapClient = null
         signInRequest = null
-        super.onDestroyView()
+        job?.cancel()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -54,9 +61,11 @@ class SplashFragment : Fragment() {
         navController = findNavController()
         startIdentityIntent()
         signInWithOneTap()
+        observeUserLogin()
+        observerUserExistsStatus()
     }
 
-    private fun startIdentityIntent(){
+    private fun startIdentityIntent() {
         FirebaseApp.initializeApp(requireContext())
         oneTapClient = Identity.getSignInClient(requireContext())
         signInRequest = BeginSignInRequest.builder()
@@ -111,40 +120,64 @@ class SplashFragment : Fragment() {
     }
 
     private fun observeUserLogin() {
-        _loginViewModel.apply {
-            user.observe(viewLifecycleOwner) {
-                if (it != null) {
-                    it.data?.email?.let { email ->
-                        _loginViewModel.checkIfUserExists(email)
+        viewLifecycleOwner.lifecycleScope.launch {
+            _loginViewModel.apply {
+                user
+                    .collectLatest {
+                        if (it != null) {
+                            Log.e("User", "Here Again")
+                            it.data?.email?.let { email ->
+                                _loginViewModel.checkIfUserExists(email)
+                            }
+                        } else {
+                            Toast.makeText(
+                                requireContext(),
+                                "Authentication failed",
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
                     }
-                } else {
-                    Toast.makeText(requireContext(), "Authentication failed", Toast.LENGTH_SHORT)
-                        .show()
-                }
             }
         }
     }
 
     private fun observerUserExistsStatus() {
-        _loginViewModel.apply {
-            userExists.observe(viewLifecycleOwner) { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        val data = resource.data
-                        data?.let {
-                            if (data.driverExists) {
-                                startActivity(Intent(requireContext(), SplashActivity::class.java))
-                                requireActivity().finish()
-                            } else {
-                                val bundle = Bundle()
-                                bundle.putString("displayName",_loginViewModel.user.value?.data?.displayName)
-                                navController.navigate(R.id.action_splashFragment_to_registerDetailsFragment,bundle)
+        viewLifecycleOwner.lifecycleScope.launch {
+            _loginViewModel.apply {
+                userExists.collectLatest { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            val data = resource.data
+                            data?.let {
+                                if (it.driverId != null) {
+                                    startActivity(
+                                        Intent(
+                                            requireContext(),
+                                            SplashActivity::class.java
+                                        )
+                                    )
+                                    requireActivity().finish()
+                                } else {
+                                    val bundle = Bundle()
+                                    if (navController.currentDestination?.id == R.id.splashFragment) {
+                                        bundle.putString(
+                                            "displayName",
+                                            _loginViewModel.user.value?.data?.displayName
+                                        )
+                                        navController.navigate(
+                                            R.id.action_splashFragment_to_registerDetailsFragment,
+                                            bundle
+                                        )
+                                    }
+                                }
                             }
                         }
-                    }
-                    else -> {
+
+                        else -> Unit
                     }
                 }
+
             }
         }
     }

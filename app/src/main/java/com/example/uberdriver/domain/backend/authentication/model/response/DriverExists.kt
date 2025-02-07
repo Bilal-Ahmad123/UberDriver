@@ -1,3 +1,5 @@
 package com.example.uberdriver.domain.backend.authentication.model.response
 
-data class  DriverExists(val driverExists: Boolean)
+import java.util.UUID
+
+data class  DriverExists(val driverId: UUID?)

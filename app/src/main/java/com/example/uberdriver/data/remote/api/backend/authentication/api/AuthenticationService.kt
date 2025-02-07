@@ -1,6 +1,5 @@
 package com.example.uberdriver.data.remote.api.backend.authentication.api
 
-import com.example.uberdriver.data.remote.api.backend.authentication.model.request.CreateDriver
 import com.example.uberdriver.data.remote.api.backend.authentication.model.request.CreateDriverReq
 import com.example.uberdriver.data.remote.api.backend.authentication.model.response.CheckDriverExistsResponse
 import com.example.uberdriver.data.remote.api.backend.authentication.model.response.CreateDriverResponse

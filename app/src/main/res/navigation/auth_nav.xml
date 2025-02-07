@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/auth_nav"
-    app:startDestination="@id/vehicleRegisterFragment">
+    app:startDestination="@id/welcomeFragment">
 
     <fragment
         android:id="@+id/welcomeFragment"
@@ -35,7 +35,15 @@
     <fragment
         android:id="@+id/registerDetailsFragment"
         android:name="com.example.uberdriver.presentation.auth.register.ui.RegisterDetailsFragment"
-        android:label="RegisterDetailsFragment" />
+        android:label="RegisterDetailsFragment" >
+        <action
+            android:id="@+id/action_registerDetailsFragment_to_termsAndReviewFragment"
+            app:destination="@id/termsAndReviewFragment" />
+        <action
+            android:id="@+id/action_registerDetailsFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment" />
+
+    </fragment>
     <fragment
         android:id="@+id/vehicleRegisterFragment"
         android:name="com.example.uberdriver.presentation.auth.register.ui.VehicleRegisterFragment"
@@ -43,6 +51,21 @@
         tools:layout="@layout/fragment_vehicle_register" >
         <action
             android:id="@+id/action_vehicleRegisterFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment" />
+        <action
+            android:id="@+id/action_vehicleRegisterFragment_to_termsAndReviewFragment"
+            app:destination="@id/termsAndReviewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/termsAndReviewFragment"
+        android:name="com.example.uberdriver.presentation.auth.register.ui.TermsAndReviewFragment"
+        android:label="fragment_terms_and_review"
+        tools:layout="@layout/fragment_terms_and_review" >
+        <action
+            android:id="@+id/action_termsAndReviewFragment_to_vehicleRegisterFragment"
+            app:destination="@id/vehicleRegisterFragment" />
+        <action
+            android:id="@+id/action_termsAndReviewFragment_to_welcomeFragment"
             app:destination="@id/welcomeFragment" />
     </fragment>
 </navigation>

@@ -4,5 +4,5 @@ import com.example.uberdriver.data.remote.api.backend.authentication.model.respo
 import com.example.uberdriver.domain.backend.authentication.model.response.DriverExists
 
 fun CheckDriverExistsResponse.toDomain():DriverExists{
-    return DriverExists(driverExists)
+    return DriverExists(driverId)
 }
