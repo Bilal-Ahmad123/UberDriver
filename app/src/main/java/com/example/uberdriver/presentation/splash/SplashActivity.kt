@@ -48,7 +48,6 @@ class SplashActivity : AppCompatActivity() {
 
     private fun translateToRight() {
         AnimationManager.translateToRight(binding?.ivArrow!!, 2000) {
-
         }
     }
 
@@ -58,9 +57,7 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun getUser() {
-        lifecycleScope.launch {
-            driverRoomViewModel.getDriver()
-        }
+        driverRoomViewModel.getDriver()
     }
 
 

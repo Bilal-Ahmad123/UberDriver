@@ -2,5 +2,12 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.UberDriver" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:fontFamily">@font/haborosans_normlight</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:fitsSystemWindows">false</item>
+        <item name="android:windowLightStatusBar">?attr/isLightTheme</item>
     </style>
 </resources>

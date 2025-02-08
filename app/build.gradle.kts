@@ -4,6 +4,19 @@ plugins {
     id("kotlin-kapt")
     id("com.google.gms.google-services")
     id("com.google.dagger.hilt.android")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+}
+
+secrets {
+    // To add your Maps API key to this project:
+    // 1. If the secrets.properties file does not exist, create it in the same folder as the local.properties file.
+    // 2. Add this line, where YOUR_API_KEY is your API key:
+    //        MAPS_API_KEY=YOUR_API_KEY
+    propertiesFileName = "secrets.properties"
+
+    // A properties file containing default secret values. This file can be
+    // checked in version control.
+    defaultPropertiesFileName = "local.defaults.properties"
 }
 
 android {
@@ -69,6 +82,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-measurement-api:22.2.0")
+    implementation("com.google.android.gms:play-services-location:17.0.0")
 
     implementation("com.squareup.retrofit2:retrofit:2.7.2")
     implementation("com.squareup.retrofit2:converter-gson:2.7.2")
@@ -84,4 +98,9 @@ dependencies {
     var room_version = "2.2.3"
     implementation("androidx.room:room-runtime:$room_version")
     kapt("androidx.room:room-compiler:$room_version")
+
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+
+    implementation("com.karumi:dexter:6.2.3")
+    debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
 }

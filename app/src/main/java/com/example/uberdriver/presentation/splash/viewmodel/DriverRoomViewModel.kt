@@ -23,7 +23,6 @@ class DriverRoomViewModel @Inject constructor(
     val driver get() = _driver
     fun getDriver() {
         launchOnDb {
-            Log.d("DriverID", "getDriver: ${getDriverUseCase().driverId}")
             _driver.emit(getDriverUseCase())
         }
     }

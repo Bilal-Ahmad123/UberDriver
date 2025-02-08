@@ -9,4 +9,8 @@
     </style>
 
     <style name="BottomSheetDialogTheme" parent="BaseBottomSheetDialog" />
+
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowFullscreen">false</item>
+    </style>
 </resources>
