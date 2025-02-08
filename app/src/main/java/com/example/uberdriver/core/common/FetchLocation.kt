@@ -63,7 +63,6 @@ object FetchLocation {
 
                 locationCallback = object : LocationCallback() {
                     override fun onLocationResult(locationResult: LocationResult) {
-                        Log.d("FetchLocation", "onLocationResult: ${locationResult.lastLocation}")
                         val location = locationResult.lastLocation
                         if (location != null) {
                             fusedLocationClient?.removeLocationUpdates(this)
@@ -127,12 +126,10 @@ object FetchLocation {
             setFastestInterval(5000)
             setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
         }
-        checkLocationPermission(context) {
             fusedLocationClient?.requestLocationUpdates(
                 continuousLocation,
                 locationCallback2!!, Looper.getMainLooper()
             )
-        }
 
     }
 

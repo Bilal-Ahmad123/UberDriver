@@ -103,4 +103,8 @@ dependencies {
 
     implementation("com.karumi:dexter:6.2.3")
     debugImplementation("com.squareup.leakcanary:leakcanary-android:2.14")
+
+    implementation("io.nlopez.smartlocation:library:3.3.3")
+
+
 }
