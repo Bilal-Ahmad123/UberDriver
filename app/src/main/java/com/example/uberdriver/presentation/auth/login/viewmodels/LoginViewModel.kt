@@ -1,17 +1,14 @@
 package com.example.uberdriver.presentation.auth.login.viewmodels
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.example.uberdriver.core.common.BaseViewModel
 import com.example.uberdriver.core.common.Resource
 import com.example.uberdriver.core.dispatcher.IDispatchers
-import com.example.uberdriver.domain.backend.authentication.model.response.DriverExists
-import com.example.uberdriver.domain.usecase.CheckDriverExists
-import com.example.uberdriver.domain.usecase.SignInUseCase
+import com.example.uberdriver.domain.remote.authentication.model.response.DriverExists
+import com.example.uberdriver.domain.remote.authentication.usecase.CheckDriverExists
+import com.example.uberdriver.domain.remote.authentication.usecase.SignInUseCase
 import com.google.android.gms.auth.api.identity.SignInCredential
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import retrofit2.Response
 import javax.inject.Inject

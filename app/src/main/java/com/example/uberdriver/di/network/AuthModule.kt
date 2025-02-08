@@ -25,7 +25,7 @@ class AuthModule {
     @Provides
     @Singleton
     fun provideAuthRepositoryImpl(api:AuthenticationService): AuthRepository {
-        return com.example.uberdriver.domain.repository.AuthRepository(
+        return com.example.uberdriver.domain.remote.authentication.repository.AuthRepository(
             api
         )
     }

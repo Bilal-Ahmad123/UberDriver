@@ -1,12 +1,11 @@
 package com.example.uberdriver.presentation.auth.register.viewmodels
 
-import androidx.lifecycle.MutableLiveData
 import com.example.uberdriver.core.common.BaseViewModel
 import com.example.uberdriver.core.common.Resource
 import com.example.uberdriver.core.dispatcher.IDispatchers
 import com.example.uberdriver.data.remote.api.backend.authentication.model.request.CreateDriverRequest
-import com.example.uberdriver.domain.backend.authentication.model.response.CreateDriver
-import com.example.uberdriver.domain.usecase.CreateDriverUseCase
+import com.example.uberdriver.domain.remote.authentication.model.response.CreateDriver
+import com.example.uberdriver.domain.remote.authentication.usecase.CreateDriverUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import retrofit2.Response

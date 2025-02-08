@@ -1,8 +1,8 @@
 package com.example.uberdriver.data.remote.api.backend.driver.vehicle.repository
 
 import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.request.CreateVehicleRequest
-import com.example.uberdriver.domain.backend.vehicle.model.response.CheckVehicleExists
-import com.example.uberdriver.domain.backend.vehicle.model.response.CreateVehicle
+import com.example.uberdriver.domain.remote.vehicle.model.response.CheckVehicleExists
+import com.example.uberdriver.domain.remote.vehicle.model.response.CreateVehicle
 import retrofit2.Response
 import java.util.UUID
 

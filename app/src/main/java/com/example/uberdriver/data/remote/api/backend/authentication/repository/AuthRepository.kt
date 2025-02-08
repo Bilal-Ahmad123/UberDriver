@@ -1,9 +1,8 @@
 package com.example.uberdriver.data.remote.api.backend.authentication.repository
 
 import com.example.uberdriver.data.remote.api.backend.authentication.model.request.CreateDriverRequest
-import com.example.uberdriver.data.remote.api.backend.authentication.model.response.CheckDriverExistsResponse
-import com.example.uberdriver.domain.backend.authentication.model.response.CreateDriver
-import com.example.uberdriver.domain.backend.authentication.model.response.DriverExists
+import com.example.uberdriver.domain.remote.authentication.model.response.CreateDriver
+import com.example.uberdriver.domain.remote.authentication.model.response.DriverExists
 import com.google.android.gms.auth.api.identity.SignInCredential
 import retrofit2.Response
 import com.google.firebase.auth.FirebaseUser

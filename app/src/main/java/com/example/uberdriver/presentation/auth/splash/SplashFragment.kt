@@ -9,13 +9,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.example.uberdriver.R
 import com.example.uberdriver.core.common.Resource
+import com.example.uberdriver.domain.local.Driver.model.Driver
 import com.example.uberdriver.presentation.auth.login.viewmodels.LoginViewModel
+import com.example.uberdriver.presentation.driver.MainActivity
 import com.example.uberdriver.presentation.splash.SplashActivity
+import com.example.uberdriver.presentation.splash.viewmodel.DriverRoomViewModel
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
@@ -36,6 +40,7 @@ class SplashFragment : Fragment() {
     private val RC_SIGN_IN = 2
     private lateinit var navController: NavController
     private var job: Job? = null
+    private val driverRoomViewModel: DriverRoomViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -154,9 +159,10 @@ class SplashFragment : Fragment() {
                                     startActivity(
                                         Intent(
                                             requireContext(),
-                                            SplashActivity::class.java
+                                            MainActivity::class.java
                                         )
                                     )
+                                    driverRoomViewModel.insertDriver(Driver(it.driverId!!))
                                     requireActivity().finish()
                                 } else {
                                     val bundle = Bundle()

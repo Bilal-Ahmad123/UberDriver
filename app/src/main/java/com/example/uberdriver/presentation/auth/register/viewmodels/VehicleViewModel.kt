@@ -4,10 +4,10 @@ import com.example.uberdriver.core.common.BaseViewModel
 import com.example.uberdriver.core.common.Resource
 import com.example.uberdriver.core.dispatcher.IDispatchers
 import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.request.CreateVehicleRequest
-import com.example.uberdriver.domain.backend.vehicle.model.response.CheckVehicleExists
-import com.example.uberdriver.domain.backend.vehicle.model.response.CreateVehicle
-import com.example.uberdriver.domain.backend.vehicle.usecase.CheckVehicleExistsUseCase
-import com.example.uberdriver.domain.backend.vehicle.usecase.CreateVehicleUseCase
+import com.example.uberdriver.domain.remote.vehicle.model.response.CheckVehicleExists
+import com.example.uberdriver.domain.remote.vehicle.model.response.CreateVehicle
+import com.example.uberdriver.domain.remote.vehicle.usecase.CheckVehicleExistsUseCase
+import com.example.uberdriver.domain.remote.vehicle.usecase.CreateVehicleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import retrofit2.Response

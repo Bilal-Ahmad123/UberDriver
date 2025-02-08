@@ -15,10 +15,12 @@ import androidx.navigation.fragment.findNavController
 import com.example.uberdriver.R
 import com.example.uberdriver.data.remote.api.backend.authentication.model.request.CreateDriverRequest
 import com.example.uberdriver.databinding.FragmentTermsAndReviewBinding
+import com.example.uberdriver.domain.local.Driver.model.Driver
 import com.example.uberdriver.presentation.auth.login.viewmodels.LoginViewModel
 import com.example.uberdriver.presentation.auth.register.viewmodels.RegisterViewModel
 import com.example.uberdriver.presentation.bottomsheet.GenericBottomSheet
 import com.example.uberdriver.presentation.splash.SplashActivity
+import com.example.uberdriver.presentation.splash.viewmodel.DriverRoomViewModel
 import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +40,7 @@ class TermsAndReviewFragment : Fragment() {
     private var _bottomSheet: GenericBottomSheet? = null
     private val _registerViewModel: RegisterViewModel by activityViewModels<RegisterViewModel>()
     private val _loginViewModel: LoginViewModel by activityViewModels<LoginViewModel>()
+    private val _driverRoomViewModel: DriverRoomViewModel by viewModels<DriverRoomViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,6 +145,7 @@ class TermsAndReviewFragment : Fragment() {
                 user.collectLatest {
                     if (it?.data != null) {
                         hideProgressBar()
+                        _driverRoomViewModel.insertDriver(Driver(it.data.driverId!!))
                         navController.navigate(R.id.action_termsAndReviewFragment_to_vehicleRegisterFragment)
                     }
                 }

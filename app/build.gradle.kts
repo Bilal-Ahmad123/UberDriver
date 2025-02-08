@@ -80,4 +80,8 @@ dependencies {
     implementation("com.github.joielechong:countrycodepicker:2.4.2")
 
     implementation("com.mobsandgeeks:android-saripaar:2.0.3")
+
+    var room_version = "2.2.3"
+    implementation("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
 }
