@@ -6,12 +6,12 @@ import java.util.UUID
 class DriverTypeConverter {
 
     @TypeConverter
-    fun fromUUID(uuid: UUID?): String? { // ✅ Make UUID nullable
+    fun fromUUID(uuid: UUID?): String? {
         return uuid?.toString()
     }
 
     @TypeConverter
-    fun toUUID(uuid: String?): UUID? { // ✅ Handle null case
+    fun toUUID(uuid: String?): UUID? { 
         return uuid?.let { UUID.fromString(it) }
     }
 }
