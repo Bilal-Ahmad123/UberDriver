@@ -1,11 +1,15 @@
 package com.example.uberdriver.presentation.driver
 
 import android.Manifest
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -56,8 +61,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 getCurrentMapStyle()
             )
         )
-        requestLocationPermission()
         updateDriverMarker()
+        requestLocationPermission()
     }
 
     private fun requestLocationPermission() {
@@ -69,7 +74,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun showUserLocation() {
         checkLocationPermission(null) {
-            googleMap?.isMyLocationEnabled = true
             FetchLocation.getCurrentLocation(this) { location ->
                 animateCameraToCurrentLocation(location)
             }
@@ -127,12 +131,31 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun updateDriverMarker() {
+
         if (driverMarker == null) {
             driverMarker = googleMap?.addMarker(
                 MarkerOptions().position(LatLng(33.591293, 73.122300))
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
-                    .alpha(0f)
+                    .icon(bitmapDescriptorFromVector(R.drawable.driver_arrow1))
             )
         }
+    }
+
+    private fun bitmapDescriptorFromVector(vectorResId: Int): BitmapDescriptor? {
+        val drawable: Drawable? = ContextCompat.getDrawable(this, vectorResId)
+        drawable?.let {
+            val originalWidth = it.intrinsicWidth
+            val originalHeight = it.intrinsicHeight
+
+            val scaledWidth = (originalWidth * 0.24).toInt()  
+            val scaledHeight = (originalHeight * 0.24).toInt()
+
+            val bitmap = Bitmap.createBitmap(scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            it.setBounds(0, 0, canvas.width, canvas.height)
+            it.draw(canvas)
+
+            return BitmapDescriptorFactory.fromBitmap(bitmap)
+        }
+        return null
     }
 }
