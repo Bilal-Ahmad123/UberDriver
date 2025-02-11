@@ -1,12 +1,15 @@
 package com.example.uberdriver.presentation.driver
 
 import android.Manifest
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -48,6 +51,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             insets
         }
         setUpGoogleMap()
+        startRippleAnimation()
     }
 
     private fun getCurrentMapStyle(): Int =
@@ -158,4 +162,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         return null
     }
+
+    fun startRippleAnimation() {
+        val rippleView = findViewById<View>(R.id.rippleView)
+
+        val scaleX = ObjectAnimator.ofFloat(rippleView, View.SCALE_X, 1f, 1.5f)
+        val scaleY = ObjectAnimator.ofFloat(rippleView, View.SCALE_Y, 1f, 1.5f)
+        val alpha = ObjectAnimator.ofFloat(rippleView, View.ALPHA, 1f, 0f)
+
+        scaleX.repeatCount = ObjectAnimator.INFINITE
+        scaleY.repeatCount = ObjectAnimator.INFINITE
+        alpha.repeatCount = ObjectAnimator.INFINITE
+
+        scaleX.duration = 1000
+        scaleY.duration = 1000
+        alpha.duration = 1000
+
+        val animatorSet = AnimatorSet()
+        animatorSet.playTogether(scaleX, scaleY, alpha)
+        animatorSet.start()
+    }
+
+
 }

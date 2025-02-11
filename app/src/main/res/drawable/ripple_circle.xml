@@ -1,0 +1,15 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- Stroke for border -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/white" />
+
+    <!-- Remove solid fill to keep it transparent -->
+    <solid android:color="@android:color/transparent" />
+
+    <size
+        android:width="@dimen/_40sdp"
+        android:height="@dimen/_40sdp" />
+</shape>
