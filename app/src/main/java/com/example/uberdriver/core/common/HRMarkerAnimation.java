@@ -3,13 +3,12 @@ package com.example.uberdriver.core.common;
 import android.animation.ValueAnimator;
 import android.location.Location;
 import android.view.animation.LinearInterpolator;
-import com.example.uberdriver.core.common.UpdateLocationCallBack;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-
 
 
 public class HRMarkerAnimation {
@@ -19,10 +18,10 @@ public class HRMarkerAnimation {
     private GoogleMap googleMap;
     private long animationDuration;
 
-    public HRMarkerAnimation(GoogleMap googleMap,long duration , UpdateLocationCallBack updateLocation) {
+    public HRMarkerAnimation(GoogleMap googleMap, long duration, UpdateLocationCallBack updateLocation) {
         this.updateLocation = updateLocation;
-        this.googleMap =googleMap;
-        this.animationDuration=duration;
+        this.googleMap = googleMap;
+        this.animationDuration = duration;
     }
 
     public void animateMarker(final Location destination, final Location oldLocation, final Marker marker) {
@@ -46,7 +45,7 @@ public class HRMarkerAnimation {
                         marker.setPosition(newPosition);
                         //marker.setRotation(computeRotation(v, startRotation, destination.getBearing()));
                         marker.setRotation(Utilities.computeRotation(v, marker.getRotation(),
-                                (float)Utilities.bearingBetweenLocations(startPosition, newPosition)));
+                                (float) Utilities.bearingBetweenLocations(startPosition, newPosition)));
                         marker.setAnchor(0.5f, 0.5f);
                         marker.setFlat(true);
 
@@ -56,14 +55,14 @@ public class HRMarkerAnimation {
 
 
                         //when marker goes out from screen it automatically move into center
-                        if (googleMap!=null){
-                            if (!Utilities.isMarkerVisible(googleMap,newPosition)){
+                        if (googleMap != null) {
+                            if (!Utilities.isMarkerVisible(googleMap, newPosition)) {
                                 googleMap.animateCamera(CameraUpdateFactory
                                         .newCameraPosition(new CameraPosition.Builder()
                                                 .target(newPosition)
                                                 .zoom(googleMap.getCameraPosition().zoom)
                                                 .build()));
-                            }else {
+                            } else {
                                 try {
                                     googleMap.animateCamera(CameraUpdateFactory
                                             .newCameraPosition(new CameraPosition.Builder()
@@ -71,7 +70,7 @@ public class HRMarkerAnimation {
                                                     .tilt(0)
                                                     .zoom(googleMap.getCameraPosition().zoom)
                                                     .build()));
-                                }catch (Exception e){
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
 

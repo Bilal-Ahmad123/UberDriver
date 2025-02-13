@@ -8,7 +8,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +21,7 @@ import com.example.uberdriver.core.common.FetchLocation
 import com.example.uberdriver.core.common.HRMarkerAnimation
 import com.example.uberdriver.core.common.Helper
 import com.example.uberdriver.core.common.PermissionManagers
+import com.example.uberdriver.presentation.bottomsheet.GenericBottomSheet
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var driverMarker: Marker? = null
     private var oldLocation: Location? = null
     private var mLastLocation: Location? = null
+    private var bottomSheet: GenericBottomSheet? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +54,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         setUpGoogleMap()
         startRippleAnimation()
+        showBottomSheet()
     }
 
     private fun getCurrentMapStyle(): Int =
@@ -70,21 +73,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun requestLocationPermission() {
-        checkLocationPermission("Need Access to Location") {
+        checkLocationPermission {
             showUserLocation()
             fetchContinuousLocation()
         }
     }
 
     private fun showUserLocation() {
-        checkLocationPermission(null) {
+        checkLocationPermission {
             FetchLocation.getCurrentLocation(this) { location ->
                 animateCameraToCurrentLocation(location)
             }
         }
     }
 
-    private fun checkLocationPermission(rationale: String?, onGranted: () -> Unit) {
+    private fun checkLocationPermission(onGranted: () -> Unit) {
         PermissionManagers.requestPermission(
             this,
             Manifest.permission.ACCESS_FINE_LOCATION
@@ -150,7 +153,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val originalWidth = it.intrinsicWidth
             val originalHeight = it.intrinsicHeight
 
-            val scaledWidth = (originalWidth * 0.24).toInt()  
+            val scaledWidth = (originalWidth * 0.24).toInt()
             val scaledHeight = (originalHeight * 0.24).toInt()
 
             val bitmap = Bitmap.createBitmap(scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888)
@@ -181,6 +184,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val animatorSet = AnimatorSet()
         animatorSet.playTogether(scaleX, scaleY, alpha)
         animatorSet.start()
+    }
+
+    private fun showBottomSheet() {
+        val customView =
+            LayoutInflater.from(this).inflate(R.layout.you_are_offline_bottom_sheet_content, null)
+        bottomSheet = GenericBottomSheet.newInstance(customView)
+        bottomSheet?.isCancelable = false
+        bottomSheet?.show(supportFragmentManager, bottomSheet?.tag)
     }
 
 

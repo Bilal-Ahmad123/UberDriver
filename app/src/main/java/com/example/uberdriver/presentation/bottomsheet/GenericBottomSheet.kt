@@ -16,6 +16,7 @@ class GenericBottomSheet: BottomSheetDialogFragment() {
     lateinit var bottomSheet: View
     lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
+
     override fun getTheme(): Int = R.style.BottomSheetDialogTheme
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog = BottomSheetDialog(requireContext(), theme)
@@ -35,10 +36,10 @@ class GenericBottomSheet: BottomSheetDialogFragment() {
             }
             containerView.addView(it)
         }
+        isCancelable = false
 
         return view
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
