@@ -106,5 +106,6 @@ dependencies {
 
     implementation("io.nlopez.smartlocation:library:3.3.3")
 
+    implementation("com.microsoft.signalr:signalr:7.0.0")
 
 }

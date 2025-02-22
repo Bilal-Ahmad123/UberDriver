@@ -11,13 +11,13 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class GenericBottomSheet: BottomSheetDialogFragment() {
+class GenericBottomSheet(private val bottomSheettheme : Int): BottomSheetDialogFragment() {
     var customView: View? = null
     lateinit var bottomSheet: View
     lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
 
 
-    override fun getTheme(): Int = R.style.BottomSheetDialogTheme
+    override fun getTheme(): Int = this.bottomSheettheme
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog = BottomSheetDialog(requireContext(), theme)
 
@@ -36,17 +36,16 @@ class GenericBottomSheet: BottomSheetDialogFragment() {
             }
             containerView.addView(it)
         }
-        isCancelable = false
-
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
     }
 
+
     companion object {
-        fun newInstance(customView: View): GenericBottomSheet {
-            val fragment = GenericBottomSheet()
+        fun newInstance(customView: View,bottomSheettheme : Int = R.style.BottomSheetDialogTheme): GenericBottomSheet {
+            val fragment = GenericBottomSheet(bottomSheettheme)
             fragment.customView = customView
             return fragment
         }
