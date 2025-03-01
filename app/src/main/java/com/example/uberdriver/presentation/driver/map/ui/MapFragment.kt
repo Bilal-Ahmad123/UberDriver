@@ -1,23 +1,19 @@
 package com.example.uberdriver.presentation.driver.map.ui
 
 import android.Manifest
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.uberdriver.R
+import com.example.uberdriver.core.common.BitmapCreator
+import com.example.uberdriver.core.common.ButtonAnimator
 import com.example.uberdriver.core.common.Constants_Api
 import com.example.uberdriver.core.common.FetchLocation
 import com.example.uberdriver.core.common.HRMarkerAnimation
@@ -32,12 +28,12 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -47,7 +43,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var driverMarker: Marker? = null
     private var oldLocation: Location? = null
     private var mLastLocation: Location? = null
-    private var binding :FragmentMapBinding? = null
+    private var binding: FragmentMapBinding? = null
     private val socketViewModel: SocketViewModel by viewModels<SocketViewModel>()
     private val driverRoomViewModel: DriverRoomViewModel by activityViewModels<DriverRoomViewModel>()
 
@@ -65,9 +61,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requestLocationPermission()
         driverRoomViewModel.getDriver()
         setUpGoogleMap()
         startRippleAnimation()
+        onGoButtonClickListener()
+        fetchCurrentLocation()
+        connectToSocket()
     }
 
     private fun getCurrentMapStyle(): Int =
@@ -81,23 +81,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 getCurrentMapStyle()
             )
         )
-        socketViewModel.connectSocket(Constants_Api.LOCATION_SOCKET_API)
         updateDriverMarker()
-        requestLocationPermission()
     }
 
-    private fun requestLocationPermission() {
-        checkLocationPermission {
-            showUserLocation()
-            fetchContinuousLocation()
-        }
-    }
-
-    private fun showUserLocation() {
+    private fun fetchCurrentLocation() {
         checkLocationPermission {
             FetchLocation.getCurrentLocation(requireContext()) { location ->
                 animateCameraToCurrentLocation(location)
             }
+        }
+    }
+
+    private fun requestLocationPermission() {
+        checkLocationPermission {
+            fetchContinuousLocation()
         }
     }
 
@@ -174,42 +171,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun bitmapDescriptorFromVector(vectorResId: Int): BitmapDescriptor? {
-        val drawable: Drawable? = ContextCompat.getDrawable(requireContext(), vectorResId)
-        drawable?.let {
-            val originalWidth = it.intrinsicWidth
-            val originalHeight = it.intrinsicHeight
-
-            val scaledWidth = (originalWidth * 0.24).toInt()
-            val scaledHeight = (originalHeight * 0.24).toInt()
-
-            val bitmap = Bitmap.createBitmap(scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            it.setBounds(0, 0, canvas.width, canvas.height)
-            it.draw(canvas)
-
-            return BitmapDescriptorFactory.fromBitmap(bitmap)
-        }
-        return null
+        return BitmapCreator.bitmapDescriptorFromVector(vectorResId, requireContext())
     }
 
     private fun startRippleAnimation() {
-        val rippleView = binding?.rippleView
-
-        val scaleX = ObjectAnimator.ofFloat(rippleView, View.SCALE_X, 1f, 1.5f)
-        val scaleY = ObjectAnimator.ofFloat(rippleView, View.SCALE_Y, 1f, 1.5f)
-        val alpha = ObjectAnimator.ofFloat(rippleView, View.ALPHA, 1f, 0f)
-
-        scaleX.repeatCount = ObjectAnimator.INFINITE
-        scaleY.repeatCount = ObjectAnimator.INFINITE
-        alpha.repeatCount = ObjectAnimator.INFINITE
-
-        scaleX.duration = 1000
-        scaleY.duration = 1000
-        alpha.duration = 1000
-
-        val animatorSet = AnimatorSet()
-        animatorSet.playTogether(scaleX, scaleY, alpha)
-        animatorSet.start()
+        ButtonAnimator.startRippleAnimation(binding?.rippleView!!)
     }
 
     override fun onDestroyView() {
@@ -219,5 +185,32 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         oldLocation = null
         driverMarker = null
         mLastLocation = null
+    }
+
+    private fun onGoButtonClickListener() {
+        binding?.goButton?.setOnClickListener {
+            binding?.bottomSheet?.tvOffline?.text = "Going Online"
+            ButtonAnimator.startHorizontalAnimation(
+                binding!!.bottomSheet.linearLine,
+                requireContext()
+            )
+            ButtonAnimator.stopRippleAnimation()
+            binding?.goButton?.visibility = View.GONE
+            hideLineView()
+            fetchContinuousLocation()
+        }
+    }
+
+    private fun hideLineView(){
+        lifecycleScope.launch {
+            delay(2000)
+            binding?.bottomSheet?.tvOffline?.text = "You are Online"
+            ButtonAnimator.stopAnimation()
+            binding?.bottomSheet?.linearLine?.visibility = View.GONE
+        }
+    }
+
+    private fun connectToSocket() {
+        socketViewModel.connectSocket(Constants_Api.LOCATION_SOCKET_API)
     }
 }

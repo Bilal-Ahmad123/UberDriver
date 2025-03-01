@@ -108,4 +108,6 @@ dependencies {
 
     implementation("com.microsoft.signalr:signalr:7.0.0")
 
+    implementation("com.github.skydoves:powerspinner:1.2.7")
+
 }

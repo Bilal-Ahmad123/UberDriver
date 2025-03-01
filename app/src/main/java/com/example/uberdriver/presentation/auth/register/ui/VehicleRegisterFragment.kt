@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
+import com.example.uberdriver.R
 import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.request.CreateVehicleRequest
 import com.example.uberdriver.databinding.FragmentVehicleRegisterBinding
 import com.example.uberdriver.presentation.auth.inputlayoutadapter.TextInputLayoutAdapter
@@ -24,6 +26,8 @@ import com.mobsandgeeks.saripaar.ValidationError
 import com.mobsandgeeks.saripaar.Validator
 import com.mobsandgeeks.saripaar.Validator.ValidationListener
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
+import com.skydoves.powerspinner.IconSpinnerAdapter
+import com.skydoves.powerspinner.IconSpinnerItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -36,9 +40,6 @@ class VehicleRegisterFragment : Fragment(), ValidationListener {
     private val vehicleViewModel: VehicleViewModel by viewModels()
     private val registerViewModel : RegisterViewModel by activityViewModels()
     private var binding: FragmentVehicleRegisterBinding? = null
-
-    @NotEmpty(message = "Vehicle Type is required")
-    private var tiVehicleType: TextInputLayout? = null
 
     @NotEmpty(message = "Vehicle Model is required")
     private var tiVehicleModel: TextInputLayout? = null
@@ -68,7 +69,6 @@ class VehicleRegisterFragment : Fragment(), ValidationListener {
     }
 
     private fun initializeTextInputs(){
-        tiVehicleType = binding?.tiVehicleType
         tiVehicleModel = binding?.tiVehicleModel
         tiVehicleNumber = binding?.tiVehicleNumber
         tiVehicleColor = binding?.tiVehicleColor
@@ -82,7 +82,6 @@ class VehicleRegisterFragment : Fragment(), ValidationListener {
         removeTextChangeListeners()
         binding = null
         validator = null
-        tiVehicleType = null
         tiVehicleModel = null
         tiVehicleNumber = null
         tiVehicleColor = null
@@ -114,6 +113,7 @@ class VehicleRegisterFragment : Fragment(), ValidationListener {
         addTextChangeListeners()
         confirmBtnClickListener()
         observeCreateVehicleResponse()
+        initializeOptions()
     }
 
     private fun setUpValidator() {
@@ -123,7 +123,6 @@ class VehicleRegisterFragment : Fragment(), ValidationListener {
     }
 
     private fun addTextChangeListeners() {
-        binding?.tiVehicleType?.editText?.addTextChangedListener(textWatcher)
         binding?.tiVehicleModel?.editText?.addTextChangedListener(textWatcher)
         binding?.tiVehicleNumber?.editText?.addTextChangedListener(textWatcher)
         binding?.tiVehicleColor?.editText?.addTextChangedListener(textWatcher)
@@ -141,7 +140,6 @@ class VehicleRegisterFragment : Fragment(), ValidationListener {
     }
 
     private fun removeTextChangeListeners() {
-        binding?.tiVehicleType?.editText?.removeTextChangedListener(textWatcher)
         binding?.tiVehicleModel?.editText?.removeTextChangedListener(textWatcher)
         binding?.tiVehicleNumber?.editText?.removeTextChangedListener(textWatcher)
         binding?.tiVehicleColor?.editText?.removeTextChangedListener(textWatcher)
@@ -154,10 +152,9 @@ class VehicleRegisterFragment : Fragment(), ValidationListener {
     }
 
     private fun createVehicleRequestObject(): CreateVehicleRequest {
-        Log.d("TAG", registerViewModel.user.value?.data?.driverId.toString())
         return CreateVehicleRequest(
-            registerViewModel.user?.value?.data?.driverId!!,
-            binding?.tiVehicleType?.editText?.text.toString(),
+            registerViewModel.user.value?.data?.driverId!!,
+            vehicleViewModel.getVehicleTypes().get(binding?.vehicleType?.selectedIndex!!),
             binding?.tiVehicleModel?.editText?.text.toString(),
             binding?.tiVehicleNumber?.editText?.text.toString(),
             binding?.tiVehicleColor?.editText?.text.toString(),
@@ -171,6 +168,14 @@ class VehicleRegisterFragment : Fragment(), ValidationListener {
             validator?.validate()
         }
     }
+
+    private fun initializeOptions(){
+        binding?.vehicleType?.apply {
+            setItems(vehicleViewModel.getVehicleTypes())
+            lifecycleOwner = requireActivity()
+        }
+    }
+
 
     private fun showProgressCycle() {
         binding?.progressBarCyclic?.visibility = View.VISIBLE

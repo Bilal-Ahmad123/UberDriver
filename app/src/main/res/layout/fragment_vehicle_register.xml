@@ -14,12 +14,12 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:layout_weight="1"
-        app:indicatorColor="@color/royal_blue"
         android:indeterminate="true"
-        app:trackThickness="@dimen/_1sdp"
-        app:trackColor="@color/grey"
         android:visibility="gone"
-        app:indicatorSize="@dimen/_100sdp" />
+        app:indicatorColor="@color/royal_blue"
+        app:indicatorSize="@dimen/_100sdp"
+        app:trackColor="@color/grey"
+        app:trackThickness="@dimen/_1sdp" />
 
     <LinearLayout
         android:id="@+id/ll_vehicle_details"
@@ -52,28 +52,29 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:orientation="vertical">
 
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/ti_vehicleType"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                <com.skydoves.powerspinner.PowerSpinnerView
+                    android:id="@+id/vehicle_type"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
-                    android:hint="Vehicle Type"
-                    app:boxStrokeColor="@color/purple_500"
-                    app:endIconMode="clear_text"
-                    app:endIconTint="@color/purple_500">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="text"
-                        android:maxLines="1" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:background="@drawable/spinner_background"
+                    android:gravity="center"
+                    android:hint="Choose Vehicle Type"
+                    android:padding="12dp"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    app:spinner_arrow_gravity="end"
+                    app:spinner_arrow_padding="8dp"
+                    app:spinner_arrow_tint="@color/black"
+                    app:spinner_divider_color="@color/grey"
+                    app:spinner_divider_show="true"
+                    app:spinner_popup_animation="dropdown"
+                    app:spinner_popup_background="@drawable/spinner_popup_background"
+                    app:spinner_popup_elevation="6dp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/ti_vehicleModel"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -91,7 +92,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/ti_vehicle_number"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -109,7 +110,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/ti_vehicle_color"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -127,7 +128,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/ti_vehicle_year"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
@@ -145,7 +146,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/ti_vehicle_make"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
