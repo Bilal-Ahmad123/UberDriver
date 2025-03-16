@@ -17,8 +17,8 @@ import com.example.uberdriver.R
 import com.example.uberdriver.core.common.Resource
 import com.example.uberdriver.domain.local.Driver.model.Driver
 import com.example.uberdriver.presentation.auth.login.viewmodels.LoginViewModel
+import com.example.uberdriver.presentation.auth.register.viewmodels.VehicleViewModel
 import com.example.uberdriver.presentation.driver.MainActivity
-import com.example.uberdriver.presentation.splash.SplashActivity
 import com.example.uberdriver.presentation.splash.viewmodel.DriverRoomViewModel
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
@@ -41,6 +41,7 @@ class SplashFragment : Fragment() {
     private lateinit var navController: NavController
     private var job: Job? = null
     private val driverRoomViewModel: DriverRoomViewModel by viewModels()
+    private val vehicleViewModel: VehicleViewModel by activityViewModels<VehicleViewModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -155,31 +156,12 @@ class SplashFragment : Fragment() {
                         is Resource.Success -> {
                             val data = resource.data
                             data?.let {
-                                if (it.driverId != UUID(0,0)) {
-                                    startActivity(
-                                        Intent(
-                                            requireContext(),
-                                            MainActivity::class.java
-                                        )
-                                    )
+                                if (it.driverId != UUID(0, 0)) {
                                     driverRoomViewModel.insertDriver(Driver(it.driverId!!))
-                                    requireActivity().finish()
-                                } else {
-                                    val bundle = Bundle()
-                                    if (navController.currentDestination?.id == R.id.splashFragment) {
-                                        bundle.putString(
-                                            "displayName",
-                                            _loginViewModel.user.value?.data?.displayName
-                                        )
-                                        navController.navigate(
-                                            R.id.action_splashFragment_to_registerDetailsFragment,
-                                            bundle
-                                        )
-                                    }
+                                    checkIfVehicleRegistered(it.driverId)
                                 }
                             }
                         }
-
                         else -> Unit
                     }
                 }
@@ -188,4 +170,43 @@ class SplashFragment : Fragment() {
         }
     }
 
+    private fun checkIfVehicleRegistered(driverId: UUID) {
+        observeVehicleExists()
+        vehicleViewModel.checkVehicleExists(driverId)
+    }
+
+    private fun observeVehicleExists() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            vehicleViewModel.apply {
+                vehicleExists.collectLatest {
+                    when (it) {
+                        is Resource.Success -> {
+                            if (it.data!!.exists) {
+                                startActivity(
+                                    Intent(
+                                        requireContext(),
+                                        MainActivity::class.java
+                                    )
+                                )
+                                requireActivity().finish()
+                            } else {
+                                val bundle = Bundle()
+                                if (navController.currentDestination?.id == R.id.splashFragment) {
+                                    bundle.putString(
+                                        "displayName",
+                                        _loginViewModel.user.value?.data?.displayName
+                                    )
+                                    navController.navigate(
+                                        R.id.action_splashFragment_to_registerDetailsFragment,
+                                        bundle
+                                    )
+                                }
+                            }
+                        }
+                        else -> Unit
+                    }
+                }
+            }
+        }
+    }
 }

@@ -200,5 +200,4 @@ class VehicleRegisterFragment : Fragment(), ValidationListener {
             }
         }
     }
-
 }

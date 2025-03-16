@@ -25,7 +25,6 @@ class VehicleViewModel @Inject constructor(
     private val _createVehicle = MutableStateFlow<Resource<CreateVehicle>?>(null)
     val createVehicle get() = _createVehicle
 
-
     private fun <T> handleResponse(response: Response<T>): Resource<T>? {
         if (response.isSuccessful) {
             return response.body()?.let {
@@ -57,5 +56,8 @@ class VehicleViewModel @Inject constructor(
             _vehicleExists.emit(handleResponse(result))
         }
     }
+
+
+
 
 }

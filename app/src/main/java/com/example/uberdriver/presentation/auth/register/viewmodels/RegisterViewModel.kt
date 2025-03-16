@@ -16,7 +16,7 @@ class RegisterViewModel @Inject constructor(
     dispatcher: IDispatchers,
     private val createDriverUseCase: CreateDriverUseCase
 ) : BaseViewModel(dispatcher) {
-    private val _user = MutableStateFlow<Resource<CreateDriver>?>(null)
+    val _user = MutableStateFlow<Resource<CreateDriver>?>(null)
     val user get() = _user
 
     private fun <T> handleResponse(response: Response<T>): Resource<T>? {

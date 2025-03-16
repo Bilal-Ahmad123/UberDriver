@@ -127,7 +127,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             UpdateLocation(
                                 dri?.driverId!!,
                                 it.longitude,
-                                it.latitude
+                                it.latitude,
+                                "Lux"
                             )
                         )
                     }
