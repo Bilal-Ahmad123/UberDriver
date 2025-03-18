@@ -4,6 +4,7 @@ import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.reque
 import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.request.CreateVehicleRequest
 import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.response.CheckVehicleExistsResponse
 import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.response.CreateVehicleResponse
+import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.response.GetVehicleDetailsResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -21,4 +22,9 @@ interface VehicleService {
     suspend fun checkVehicleExists(
         @Query("DriverId") driverId: UUID
     ):Response<CheckVehicleExistsResponse>
+
+    @GET("api/vehicle/details")
+    suspend fun getVehicleDetails(
+        @Query("DriverId") driverId: UUID
+    ):Response<GetVehicleDetailsResponse>
 }

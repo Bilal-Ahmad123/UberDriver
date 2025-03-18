@@ -6,8 +6,10 @@ import com.example.uberdriver.core.dispatcher.IDispatchers
 import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.request.CreateVehicleRequest
 import com.example.uberdriver.domain.remote.vehicle.model.response.CheckVehicleExists
 import com.example.uberdriver.domain.remote.vehicle.model.response.CreateVehicle
+import com.example.uberdriver.domain.remote.vehicle.model.response.VehicleDetails
 import com.example.uberdriver.domain.remote.vehicle.usecase.CheckVehicleExistsUseCase
 import com.example.uberdriver.domain.remote.vehicle.usecase.CreateVehicleUseCase
+import com.example.uberdriver.domain.remote.vehicle.usecase.GetVehicleDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import retrofit2.Response
@@ -18,12 +20,15 @@ import javax.inject.Inject
 class VehicleViewModel @Inject constructor(
     dispatcher: IDispatchers,
     private val useCase: CreateVehicleUseCase,
-    private val checkVehicleExistsUseCase: CheckVehicleExistsUseCase
+    private val checkVehicleExistsUseCase: CheckVehicleExistsUseCase,
+    private val getVehicleDetailsUseCase: GetVehicleDetails
 ):BaseViewModel(dispatcher){
     private val _vehicleExists = MutableStateFlow<Resource<CheckVehicleExists>?>(null)
     val vehicleExists get() = _vehicleExists
     private val _createVehicle = MutableStateFlow<Resource<CreateVehicle>?>(null)
     val createVehicle get() = _createVehicle
+    private val _vehicleDetails = MutableStateFlow<Resource<VehicleDetails>?>(null)
+    val vehicleDetails get() = _vehicleDetails
 
     private fun <T> handleResponse(response: Response<T>): Resource<T>? {
         if (response.isSuccessful) {
@@ -57,7 +62,11 @@ class VehicleViewModel @Inject constructor(
         }
     }
 
-
-
-
+    fun getVehicleDetails(driverId: UUID) {
+        launchOnBack {
+            _vehicleDetails.emit(Resource.Loading())
+            val result = getVehicleDetailsUseCase(driverId)
+            _vehicleDetails.emit(handleResponse(result))
+        }
+    }
 }

@@ -5,10 +5,10 @@ import com.example.uberdriver.data.remote.api.backend.driver.location.repository
 import com.example.uberdriver.domain.remote.location.model.UpdateLocation
 import javax.inject.Inject
 
-class SocketRepository @Inject constructor(private val socket: SocketManager) :
+class SocketRepository @Inject constructor(private val socket: SocketManager<UpdateLocation>) :
     SocketRepository {
     override suspend fun sendCurrentLocation(location: UpdateLocation) {
-        socket.send(location)
+        socket.send<UpdateLocation>(location,"UpdateLocation")
     }
 
     override fun connect(url: String) {

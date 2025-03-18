@@ -9,7 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.WebSocket
 import javax.inject.Inject
 
-class SocketManager @Inject constructor() {
+class SocketManager<T> @Inject constructor() {
     private var socket: WebSocket? = null
     private val client = OkHttpClient()
     private lateinit var hubConnection: HubConnection
@@ -24,9 +24,9 @@ class SocketManager @Inject constructor() {
             Log.d("SocketManager", "Error connecting to socket: ${it.message}")
         }
     }
-     fun send(location: UpdateLocation){
+     fun<T> send(data:T,method:String){
         runCatching {
-            hubConnection.send("UpdateLocation", location.toData())
+            hubConnection.send(method, data)
         }.onFailure {
             Log.d("SocketManager", "Error sending message: ${it.message}")
         }

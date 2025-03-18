@@ -6,6 +6,7 @@ import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.reque
 import com.example.uberdriver.data.remote.api.backend.driver.vehicle.repository.VehicleRepository
 import com.example.uberdriver.domain.remote.vehicle.model.response.CheckVehicleExists
 import com.example.uberdriver.domain.remote.vehicle.model.response.CreateVehicle
+import com.example.uberdriver.domain.remote.vehicle.model.response.VehicleDetails
 import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.request.CreateVehicle as CreateVehicleReq
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -26,6 +27,15 @@ class VehicleRepository @Inject constructor(private val api: VehicleService) :Ve
         return try {
             Response.success(api.checkVehicleExists(driverId).body()?.toDomain())
         }catch (e:Exception){
+            Response.error(500,ResponseBody.create(null, "Network error: ${e.localizedMessage}"))
+        }
+    }
+
+    override suspend fun getVehicleDetails(driverId: UUID): Response<VehicleDetails> {
+        return try {
+            Response.success(api.getVehicleDetails(driverId).body()?.toDomain())
+        }
+        catch (e:Exception){
             Response.error(500,ResponseBody.create(null, "Network error: ${e.localizedMessage}"))
         }
     }

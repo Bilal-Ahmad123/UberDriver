@@ -21,6 +21,7 @@ import com.example.uberdriver.core.common.Helper
 import com.example.uberdriver.core.common.PermissionManagers
 import com.example.uberdriver.databinding.FragmentMapBinding
 import com.example.uberdriver.domain.remote.location.model.UpdateLocation
+import com.example.uberdriver.presentation.auth.register.viewmodels.VehicleViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.SocketViewModel
 import com.example.uberdriver.presentation.splash.viewmodel.DriverRoomViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -46,7 +47,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var binding: FragmentMapBinding? = null
     private val socketViewModel: SocketViewModel by viewModels<SocketViewModel>()
     private val driverRoomViewModel: DriverRoomViewModel by activityViewModels<DriverRoomViewModel>()
-
+    private val vehicleViewModel: VehicleViewModel by activityViewModels<VehicleViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -63,11 +64,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         super.onViewCreated(view, savedInstanceState)
         requestLocationPermission()
         driverRoomViewModel.getDriver()
+        getVehicleDetails()
         setUpGoogleMap()
         startRippleAnimation()
         onGoButtonClickListener()
         fetchCurrentLocation()
         connectToSocket()
+    }
+
+    private fun getVehicleDetails(){
+        vehicleViewModel.getVehicleDetails(driverRoomViewModel.driver.value!!.driverId)
     }
 
     private fun getCurrentMapStyle(): Int =
@@ -128,7 +134,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 dri?.driverId!!,
                                 it.longitude,
                                 it.latitude,
-                                "Lux"
+                                vehicleViewModel.vehicleDetails.value!!.data!!.type
                             )
                         )
                     }
