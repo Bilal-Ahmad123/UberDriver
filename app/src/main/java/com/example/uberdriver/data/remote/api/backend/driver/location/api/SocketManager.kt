@@ -9,7 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.WebSocket
 import javax.inject.Inject
 
-class SocketManager<T> @Inject constructor() {
+class SocketManager @Inject constructor() {
     private var socket: WebSocket? = null
     private val client = OkHttpClient()
     private lateinit var hubConnection: HubConnection

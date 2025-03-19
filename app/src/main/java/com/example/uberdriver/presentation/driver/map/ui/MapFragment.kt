@@ -63,13 +63,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requestLocationPermission()
-        driverRoomViewModel.getDriver()
-        getVehicleDetails()
+        initialCalls()
         setUpGoogleMap()
         startRippleAnimation()
         onGoButtonClickListener()
-        fetchCurrentLocation()
         connectToSocket()
+    }
+
+    private fun initialCalls(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            val job = driverRoomViewModel.getDriver()
+            job.join()
+            getVehicleDetails()
+            fetchCurrentLocation()
+        }
     }
 
     private fun getVehicleDetails(){

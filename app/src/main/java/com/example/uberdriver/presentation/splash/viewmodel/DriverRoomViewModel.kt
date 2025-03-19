@@ -8,6 +8,7 @@ import com.example.uberdriver.domain.local.Driver.model.Driver
 import com.example.uberdriver.domain.local.Driver.usecase.GetDriver
 import com.example.uberdriver.domain.local.Driver.usecase.InsertDriver
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import retrofit2.Response
@@ -21,8 +22,8 @@ class DriverRoomViewModel @Inject constructor(
 ) : BaseViewModel(dispatcher) {
     private val _driver = MutableStateFlow<Driver?>(null)
     val driver get() = _driver
-    fun getDriver() {
-        launchOnDb {
+    fun getDriver():Job {
+        return launchOnDb {
             _driver.emit(getDriverUseCase())
         }
     }
