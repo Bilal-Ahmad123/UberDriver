@@ -17,7 +17,7 @@ class VehicleModule {
     @Provides
     @Singleton
     fun provideVehicleServiceImpl(): VehicleService {
-        return Retrofit.Builder().baseUrl(Constants_Api.BACKEND_DRIVER_API)
+        return Retrofit.Builder().baseUrl(Constants_Api.BACKEND_VEHICLE_API)
             .addConverterFactory(GsonConverterFactory.create()).build()
             .create(VehicleService::class.java)
     }

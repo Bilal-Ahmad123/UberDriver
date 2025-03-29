@@ -160,6 +160,17 @@ class SplashFragment : Fragment() {
                                     driverRoomViewModel.insertDriver(Driver(it.driverId!!))
                                     checkIfVehicleRegistered(it.driverId)
                                 }
+                                else{
+                                    val bundle = Bundle()
+                                    bundle.putString(
+                                        "displayName",
+                                        _loginViewModel.user.value?.data?.displayName
+                                    )
+                                    navController.navigate(
+                                        R.id.action_splashFragment_to_registerDetailsFragment,
+                                        bundle
+                                    )
+                                }
                             }
                         }
                         else -> Unit

@@ -34,9 +34,9 @@ class AuthActivity : AppCompatActivity() {
         val bundle = intent.extras
 
         val fragmentName = bundle?.getString("FragmentName")
-        val driverId = bundle?.getSerializable("driverId") as UUID
         when(fragmentName){
              "VehicleRegisterFragment" -> {
+                 val driverId = bundle?.getSerializable("driverId") as UUID
                  registerViewModel._user.value = Resource.Success(CreateDriver(driverId))
                  val fragment = VehicleRegisterFragment()
                  supportFragmentManager.beginTransaction()
