@@ -208,7 +208,7 @@ class SplashFragment : Fragment() {
                                         _loginViewModel.user.value?.data?.displayName
                                     )
                                     navController.navigate(
-                                        R.id.action_splashFragment_to_registerDetailsFragment,
+                                        R.id.action_splashFragment_to_vehicleRegisterFragment,
                                         bundle
                                     )
                                 }
