@@ -1,6 +1,5 @@
-package com.example.uberdriver.domain.remote.location.repository
+package com.example.uberdriver.domain.remote.socket
 
-import com.example.uberdriver.data.remote.api.backend.driver.location.api.SocketManager
 import com.example.uberdriver.data.remote.api.backend.driver.location.mapper.UpdateDriverLocation
 import com.example.uberdriver.data.remote.api.backend.driver.location.mapper.toData
 import com.example.uberdriver.data.remote.api.backend.driver.location.repository.SocketRepository

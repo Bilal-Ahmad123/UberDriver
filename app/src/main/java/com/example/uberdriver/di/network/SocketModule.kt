@@ -1,6 +1,6 @@
 package com.example.uberdriver.di.network
 
-import com.example.uberdriver.data.remote.api.backend.driver.location.api.SocketManager
+import com.example.uberdriver.domain.remote.socket.SocketManager
 import com.example.uberdriver.data.remote.api.backend.driver.location.repository.SocketRepository
 import dagger.Module
 import dagger.Provides
@@ -22,6 +22,6 @@ class SocketModule {
     @Provides
     @Singleton
     fun provideLocationRepository(socketManager: SocketManager):SocketRepository{
-        return com.example.uberdriver.domain.remote.location.repository.SocketRepository(socketManager)
+        return com.example.uberdriver.domain.remote.socket.SocketRepository(socketManager)
     }
 }
