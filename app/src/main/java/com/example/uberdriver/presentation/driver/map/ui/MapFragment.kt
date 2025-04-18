@@ -20,8 +20,10 @@ import com.example.uberdriver.core.common.HRMarkerAnimation
 import com.example.uberdriver.core.common.Helper
 import com.example.uberdriver.core.common.PermissionManagers
 import com.example.uberdriver.databinding.FragmentMapBinding
-import com.example.uberdriver.domain.remote.location.model.UpdateLocation
+import com.example.uberdriver.domain.remote.socket.location.model.UpdateLocation
 import com.example.uberdriver.presentation.auth.register.viewmodels.VehicleViewModel
+import com.example.uberdriver.presentation.driver.map.viewmodel.DriverViewModel
+import com.example.uberdriver.presentation.driver.map.viewmodel.LocationViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.SocketViewModel
 import com.example.uberdriver.presentation.splash.viewmodel.DriverRoomViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -35,6 +37,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -46,7 +49,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var mLastLocation: Location? = null
     private var binding: FragmentMapBinding? = null
     private val socketViewModel: SocketViewModel by viewModels<SocketViewModel>()
+    private val locationViewModel: LocationViewModel by activityViewModels<LocationViewModel>()
     private val driverRoomViewModel: DriverRoomViewModel by activityViewModels<DriverRoomViewModel>()
+    private val driverViewModel: DriverViewModel by activityViewModels<DriverViewModel>()
     private val vehicleViewModel: VehicleViewModel by activityViewModels<VehicleViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,7 +75,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         connectToSocket()
     }
 
-    private fun initialCalls(){
+    private fun initialCalls() {
         viewLifecycleOwner.lifecycleScope.launch {
             val job = driverRoomViewModel.getDriver()
             job.join()
@@ -79,7 +84,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun getVehicleDetails(){
+    private fun getVehicleDetails() {
         vehicleViewModel.getVehicleDetails(driverRoomViewModel.driver.value!!.driverId)
     }
 
@@ -135,15 +140,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 FetchLocation.getLocationUpdates(requireContext()).collect {
                     updateLocation(it)
                     driverRoomViewModel.driver.value.let { dri ->
-                        Log.d("MapFragment", "DriverId: ${dri?.driverId}")
-                        socketViewModel.sendDriverLocation(
-                            UpdateLocation(
-                                dri?.driverId!!,
-                                it.longitude,
-                                it.latitude,
-                                vehicleViewModel.vehicleDetails.value!!.data!!.type
-                            )
-                        )
+                        with(socketViewModel) {
+                            if (socketConnected.value) {
+                                locationViewModel.sendDriverLocation(
+                                    UpdateLocation(
+                                        dri?.driverId!!,
+                                        it.longitude,
+                                        it.latitude,
+                                        vehicleViewModel.vehicleDetails.value!!.data!!.type
+                                    )
+                                )
+                            }
+                        }
+
                     }
                 }
             }
@@ -215,7 +224,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun hideLineView(){
+    private fun hideLineView() {
         lifecycleScope.launch {
             delay(2000)
             binding?.bottomSheet?.tvOffline?.text = "You are Online"
@@ -226,5 +235,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun connectToSocket() {
         socketViewModel.connectSocket(Constants_Api.LOCATION_SOCKET_API)
+        socketViewModel.observeConnectedToSocket()
     }
+
 }

@@ -1,6 +1,6 @@
 package com.example.uberdriver.data.remote.api.backend.driver.location.mapper
 
-import com.example.uberdriver.domain.remote.location.model.UpdateLocation
+import com.example.uberdriver.domain.remote.socket.location.model.UpdateLocation
 import java.util.UUID
 
 fun UpdateLocation.toData():UpdateDriverLocation{

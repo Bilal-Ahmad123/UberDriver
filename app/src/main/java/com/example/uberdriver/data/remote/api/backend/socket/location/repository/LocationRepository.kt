@@ -1,8 +1,7 @@
 package com.example.uberdriver.data.remote.api.backend.driver.location.repository
 
-import com.example.uberdriver.domain.remote.location.model.UpdateLocation
+import com.example.uberdriver.domain.remote.socket.location.model.UpdateLocation
 
-interface SocketRepository {
+interface LocationRepository {
     suspend fun sendCurrentLocation(location: UpdateLocation)
-    fun connect(url: String)
 }

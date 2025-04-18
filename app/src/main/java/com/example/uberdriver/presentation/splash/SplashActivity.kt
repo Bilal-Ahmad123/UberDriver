@@ -8,9 +8,9 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.uberdriver.R
+import com.example.uberdriver.core.common.Constants
 import com.example.uberdriver.core.common.Resource
 import com.example.uberdriver.databinding.ActivitySplashBinding
 import com.example.uberdriver.presentation.animator.AnimationManager
@@ -102,20 +102,23 @@ class SplashActivity : AppCompatActivity() {
                     when (it) {
                         is Resource.Success -> {
                             if (it.data!!.exists) {
-                                startActivity(
-                                    Intent(
-                                        this@SplashActivity,
-                                        MainActivity::class.java
-                                    )
+
+                                val intent = Intent(
+                                    this@SplashActivity,
+                                    MainActivity::class.java
                                 )
+                                intent.putExtra(Constants.DRIVER_ID,driverId)
+                                startActivity(intent)
+
                             } else {
                                 val intent = Intent(this@SplashActivity, AuthActivity::class.java)
-                                intent.putExtra("FragmentName","VehicleRegisterFragment")
-                                intent.putExtra("driverId",driverId)
+                                intent.putExtra("FragmentName", "VehicleRegisterFragment")
+                                intent.putExtra("driverId", driverId)
                                 startActivity(intent)
                             }
                             finish()
                         }
+
                         else -> Unit
                     }
                 }

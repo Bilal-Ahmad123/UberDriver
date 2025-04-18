@@ -1,4 +1,4 @@
-package com.example.uberdriver.domain.remote.socket
+package com.example.uberdriver.domain.remote.socket.socket.api
 
 import android.util.Log
 import com.example.uberdriver.data.remote.api.backend.socket.socketBroker.service.SocketBroker
