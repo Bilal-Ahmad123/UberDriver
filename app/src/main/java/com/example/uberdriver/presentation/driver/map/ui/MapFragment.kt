@@ -1,9 +1,9 @@
 package com.example.uberdriver.presentation.driver.map.ui
 
 import android.Manifest
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +24,7 @@ import com.example.uberdriver.domain.remote.socket.location.model.UpdateLocation
 import com.example.uberdriver.presentation.auth.register.viewmodels.VehicleViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.DriverViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.LocationViewModel
+import com.example.uberdriver.presentation.driver.map.viewmodel.RideViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.SocketViewModel
 import com.example.uberdriver.presentation.splash.viewmodel.DriverRoomViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -39,6 +40,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @AndroidEntryPoint
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -49,10 +51,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var mLastLocation: Location? = null
     private var binding: FragmentMapBinding? = null
     private val socketViewModel: SocketViewModel by viewModels<SocketViewModel>()
+    private val rideViewModel: RideViewModel by viewModels<RideViewModel>()
     private val locationViewModel: LocationViewModel by activityViewModels<LocationViewModel>()
     private val driverRoomViewModel: DriverRoomViewModel by activityViewModels<DriverRoomViewModel>()
     private val driverViewModel: DriverViewModel by activityViewModels<DriverViewModel>()
     private val vehicleViewModel: VehicleViewModel by activityViewModels<VehicleViewModel>()
+    private var isGoButtonClicked: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -73,6 +77,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         startRippleAnimation()
         onGoButtonClickListener()
         connectToSocket()
+        fetchContinuousLocation()
+        startObservingNearbyRideRequests()
+        observeRideRequests()
     }
 
     private fun initialCalls() {
@@ -80,7 +87,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val job = driverRoomViewModel.getDriver()
             job.join()
             getVehicleDetails()
-            fetchCurrentLocation()
         }
     }
 
@@ -136,12 +142,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun fetchContinuousLocation() {
         checkLocationPermission {
-            requireActivity().lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 FetchLocation.getLocationUpdates(requireContext()).collect {
+                    locationViewModel.setDriverLocation(LatLng(it.latitude,it.longitude))
+                    animateCameraToCurrentLocation(it)
                     updateLocation(it)
                     driverRoomViewModel.driver.value.let { dri ->
                         with(socketViewModel) {
-                            if (socketConnected.value) {
+                            if (socketConnected.value && isGoButtonClicked) {
                                 locationViewModel.sendDriverLocation(
                                     UpdateLocation(
                                         dri?.driverId!!,
@@ -212,15 +220,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun onGoButtonClickListener() {
         binding?.goButton?.setOnClickListener {
+            isGoButtonClicked = true
             binding?.bottomSheet?.tvOffline?.text = "Going Online"
             ButtonAnimator.startHorizontalAnimation(
                 binding!!.bottomSheet.linearLine,
                 requireContext()
             )
-            ButtonAnimator.stopRippleAnimation()
-            binding?.goButton?.visibility = View.GONE
+            binding?.frameLayout?.visibility = View.GONE
             hideLineView()
-            fetchContinuousLocation()
         }
     }
 
@@ -234,8 +241,52 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun connectToSocket() {
-        socketViewModel.connectSocket(Constants_Api.LOCATION_SOCKET_API)
+        socketViewModel.connectSocket(Constants_Api.LOCATION_SOCKET_API + "?riderId=${driverViewModel.driverId}")
         socketViewModel.observeConnectedToSocket()
+    }
+
+    private fun startObservingNearbyRideRequests() {
+        rideViewModel.startObservingNearbyRideRequests()
+        rideViewModel.observeRideRequests()
+    }
+
+    private fun observeRideRequests() {
+        rideViewModel.apply {
+            viewLifecycleOwner.lifecycleScope.launch {
+                rideRequests.collectLatest {
+                    if (it != null) {
+                        binding?.bottomSheet?.mcSheet?.visibility = View.GONE
+                        binding?.cardView?.visibility = View.VISIBLE
+                        binding?.pickupLocationName?.text = getLocationName(it.pickupLatitude,it.pickupLongitude)
+                        val pickUpDistance = getUserDistance(it.pickupLatitude,it.pickupLongitude)
+                        binding?.pickupTime?.text = Helper.getUserFetchTime(pickUpDistance.toDouble()).toString() + " mins "
+                        binding?.pickpDistance?.text = "(${pickUpDistance} mil) away"
+                        val dropOffDistance = getUserDistance(it.dropOffLatitude,it.dropOffLongitude)
+                        binding?.dropOffLocationName?.text = getLocationName(it.dropOffLatitude,it.dropOffLongitude)
+                        binding?.dropOffTime?.text = Helper.getUserFetchTime(dropOffDistance.toDouble()).toString() + " mins "
+                        binding?.dropOffDistance?.text = "(${dropOffDistance} mil) trip"
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun getLocationName(latitude : Double, longitude : Double):String{
+            return FetchLocation.getLocation(
+                latitude = latitude,
+                longitude = longitude, requireContext()
+            )
+    }
+
+
+    private fun getUserDistance(lat: Double,lng: Double):String{
+        return String.format(Locale.US, "%.1f", FetchLocation.getDistance(Location("").apply {
+            latitude = lat
+            longitude = lng
+        },Location("").apply {
+            latitude = locationViewModel.location.value!!.latitude
+            longitude = locationViewModel.location.value!!.longitude
+        }))
     }
 
 }

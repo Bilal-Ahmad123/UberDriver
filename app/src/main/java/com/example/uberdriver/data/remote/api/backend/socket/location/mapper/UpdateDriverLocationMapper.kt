@@ -4,7 +4,7 @@ import com.example.uberdriver.domain.remote.socket.location.model.UpdateLocation
 import java.util.UUID
 
 fun UpdateLocation.toData():UpdateDriverLocation{
-    return UpdateDriverLocation(driverId, longitude, latitude)
+    return UpdateDriverLocation(driverId, longitude, latitude,vehicleType)
 }
 
-data class UpdateDriverLocation(val userId:UUID, val longitude:Double, val latitude:Double)
+data class UpdateDriverLocation(val userId:UUID, val longitude:Double, val latitude:Double,val vehicleType : String)

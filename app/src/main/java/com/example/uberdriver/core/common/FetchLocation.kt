@@ -9,12 +9,14 @@ import android.location.Location
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -134,16 +136,35 @@ object FetchLocation {
     }
 
     fun getLocationUpdates(context: Context): Flow<Location> = callbackFlow {
-        locationCallback2 = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                trySend(locationResult.lastLocation!!)
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
+        val locationRequest = LocationRequest.create().apply {
+            setInterval(5000)
+            setFastestInterval(5000)
+            setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        }
+
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                result.lastLocation?.let { trySend(it) }
             }
         }
-        getContinuousLocation(context)
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                Looper.getMainLooper()
+            )
+        }
+
         awaitClose {
-            fusedLocationClient?.removeLocationUpdates(locationCallback2!!)
+            fusedLocationClient.removeLocationUpdates(locationCallback)
         }
     }
+
 
     private fun checkLocationPermission(context: Context, onGranted: () -> Unit) {
         PermissionManagers.requestPermission(
@@ -155,4 +176,9 @@ object FetchLocation {
             }
         }
     }
+
+    fun getDistance(startPoint : Location,endDistance:Location):Double{
+        return startPoint.distanceTo(endDistance) / 1609.344
+    }
+
 }

@@ -14,7 +14,9 @@
         android:layout_height="match_parent"
         tools:context=".presentation.driver.MainActivity" />
 
+
     <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center |bottom"
@@ -29,7 +31,6 @@
             android:elevation="12dp"
             android:visibility="visible" />
 
-        <!-- Floating Button -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/goButton"
             android:layout_width="wrap_content"
@@ -41,18 +42,7 @@
             android:stateListAnimator="@null"
             app:fabCustomSize="@dimen/_80sdp" />
 
-<!--        <com.google.android.material.card.MaterialCardView-->
-<!--            android:id="@+id/cardView"-->
-<!--            android:layout_width="@dimen/_100sdp"-->
-<!--            android:layout_height="200dp"-->
-<!--            android:layout_gravity="top|center"-->
-<!--            app:cardCornerRadius="16dp"-->
-<!--            app:cardElevation="8dp"-->
-<!--            android:layout_marginTop="16dp"-->
-<!--            android:padding="16dp"/>-->
 
-
-        <!-- Centered Text "GO" -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -69,6 +59,187 @@
     <include
         android:id="@+id/bottomSheet"
         layout="@layout/you_are_offline_bottom_sheet_content" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_230sdp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="@dimen/_40sdp"
+        android:elevation="8dp"
+        android:padding="@dimen/_16sdp"
+        app:cardCornerRadius="@dimen/_10sdp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/vehicle_badge"
+                    android:padding="@dimen/_6sdp">
+
+                    <ImageView
+                        android:layout_width="@dimen/_20sdp"
+                        android:layout_height="@dimen/_15sdp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/baseline_person_24" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:text="UberX"
+                        android:textColor="#ffffff"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="$5.54"
+                android:textColor="#000000"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/_10sdp"
+                    android:layout_height="@dimen/_10sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_10sdp"
+                    android:src="@drawable/circle" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/pickup_time"
+                            android:text="5 mins "
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:id="@+id/pickp_distance"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="(1.2 mi) away"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/pickup_location_name"
+                        android:text="Lyndale Ave S and W 54th St, Minneapolis"
+                        android:textColor="#555555"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/_10sdp"
+                    android:layout_height="@dimen/_10sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_10sdp"
+                    android:src="@drawable/box" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:id="@+id/dropOffTime"
+                            android:text="5 mins "
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:id="@+id/dropOffDistance"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="(1.2 mi) away"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/dropOffLocationName"
+                        android:text="Lyndale Ave S and W 54th St, Minneapolis"
+                        android:textColor="#555555"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_50sdp"
+                android:backgroundTint="@color/royal_blue"
+                android:text="Accept"
+                android:textColor="@color/white"
+                app:cornerRadius="@dimen/_5sdp" />
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

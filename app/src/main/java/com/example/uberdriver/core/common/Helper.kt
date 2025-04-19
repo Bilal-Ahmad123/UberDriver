@@ -8,4 +8,9 @@ object Helper {
         val currentNightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         return currentNightMode == Configuration.UI_MODE_NIGHT_YES
     }
+
+    fun getUserFetchTime(distance : Double):Int{
+        val distanceInMeters = distance * 1609.344
+        return (distanceInMeters / 60).toInt()
+    }
 }

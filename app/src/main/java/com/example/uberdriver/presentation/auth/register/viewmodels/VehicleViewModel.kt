@@ -54,6 +54,7 @@ class VehicleViewModel @Inject constructor(
             _createVehicle.emit(handleResponse(result))
         }
     }
+
     fun checkVehicleExists(driverId: UUID) {
         launchOnBack {
             _vehicleExists.emit(Resource.Loading())
