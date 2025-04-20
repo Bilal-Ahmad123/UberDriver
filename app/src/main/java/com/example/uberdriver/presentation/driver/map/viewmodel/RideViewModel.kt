@@ -6,6 +6,7 @@ import com.example.uberdriver.data.remote.api.backend.socket.ride.model.NearbyRi
 import com.example.uberdriver.domain.remote.socket.ride.usecase.ObserveRideRequests
 import com.example.uberdriver.domain.remote.socket.ride.usecase.StartObservingNearbyRideRequests
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import javax.inject.Inject
@@ -16,7 +17,7 @@ class RideViewModel @Inject constructor(
     private val startObservingNearbyRideRequestsUseCase: StartObservingNearbyRideRequests,
     private val observeRideRequestsUseCase: ObserveRideRequests
 ) : BaseViewModel(dispatcher) {
-    private val _rideRequests = MutableStateFlow<NearbyRideRequests?>(null)
+    private val _rideRequests = MutableSharedFlow<NearbyRideRequests>()
     val rideRequests = _rideRequests
 
     fun startObservingNearbyRideRequests(){

@@ -13,4 +13,5 @@ object Helper {
         val distanceInMeters = distance * 1609.344
         return (distanceInMeters / 60).toInt()
     }
+
 }

@@ -109,5 +109,9 @@ dependencies {
     implementation("com.microsoft.signalr:signalr:7.0.0")
 
     implementation("com.github.skydoves:powerspinner:1.2.7")
-
+    implementation ("com.github.traex.rippleeffect:library:1.3")
+    implementation ("com.skyfishjy.ripplebackground:library:1.0.1")
+    implementation ("com.github.jd-alexander:library:1.1.0")
+    implementation("com.google.maps.android:android-maps-utils:3.9.0")
+    implementation("com.github.tintinscorpion:Dual-color-Polyline-Animation:1.2")
 }

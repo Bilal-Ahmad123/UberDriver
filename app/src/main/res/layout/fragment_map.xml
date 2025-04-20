@@ -73,6 +73,16 @@
         android:padding="@dimen/_16sdp"
         app:cardCornerRadius="@dimen/_10sdp">
 
+        <com.skyfishjy.library.RippleBackground
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/content"
+            app:rb_color="#11000000"
+            app:rb_radius="32dp"
+            app:rb_rippleAmount="1"
+            app:rb_duration="2000"
+            app:rb_scale="6" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -240,6 +250,5 @@
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
