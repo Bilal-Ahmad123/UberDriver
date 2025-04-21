@@ -285,7 +285,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         routeCreationHelper = RouteCreationHelper(
             googleViewModel,
             this,
-            WeakReference(googleMap)
+            WeakReference(googleMap),
+            WeakReference(requireContext())
         )
     }
 

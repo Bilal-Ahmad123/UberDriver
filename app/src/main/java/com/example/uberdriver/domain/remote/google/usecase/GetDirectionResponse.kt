@@ -5,5 +5,5 @@ import com.google.android.gms.maps.model.LatLng
 import javax.inject.Inject
 
 class GetDirectionResponse @Inject constructor(private val repository: GoogleRepository) {
-    suspend operator fun invoke(origin: LatLng, destination: LatLng) = repository.directionsResponse(origin, destination)
+    suspend operator fun invoke(origin: LatLng, destination: LatLng,wayPoints:LatLng) = repository.directionsResponse(origin, destination,wayPoints )
 }

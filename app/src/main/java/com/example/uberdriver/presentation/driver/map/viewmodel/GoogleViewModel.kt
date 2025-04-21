@@ -20,10 +20,10 @@ class GoogleViewModel @Inject constructor(
 
     private val _directionsResponse = MutableStateFlow<Resource<DirectionsResponse>?>(null)
     val directionResponse get() = _directionsResponse
-    fun getDirectionsResponse(origin:LatLng,destination:LatLng){
+    fun getDirectionsResponse(origin:LatLng,destination:LatLng,wayPoints:LatLng){
         launchOnBack {
             _directionsResponse.emit(Resource.Loading())
-            val result = directionResponseUseCase(origin,destination)
+            val result = directionResponseUseCase(origin,destination,wayPoints)
             _directionsResponse.emit(handleResponse(result))
         }
     }

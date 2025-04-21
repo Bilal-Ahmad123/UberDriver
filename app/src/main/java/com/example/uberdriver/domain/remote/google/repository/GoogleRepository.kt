@@ -11,11 +11,14 @@ class GoogleRepository @Inject constructor(private val googleApi: GoogleMapServi
     GoogleRepository {
     override suspend fun directionsResponse(
         origin: LatLng,
-        destination: LatLng
+        destination: LatLng,
+        wayPoints:LatLng
     ): Response<DirectionsResponse> {
         return googleApi.directionsRequest(
             "${origin.latitude},${origin.longitude}",
-            "${destination.latitude},${destination.longitude}"
+            "${destination.latitude},${destination.longitude}",
+            "${wayPoints.latitude},${wayPoints.longitude}"
+
         )
     }
 

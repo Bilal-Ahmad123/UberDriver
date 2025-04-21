@@ -11,6 +11,7 @@ interface GoogleMapService {
     suspend fun directionsRequest(
         @Query("origin") origin:String,
         @Query("destination") destination:String,
+        @Query("waypoints") waypoints:String,
         @Query("key") accessToken: String =  BuildConfig.MAPS_API_KEY,
         @Query("mode") mode:String = "driving"
     ): Response<DirectionsResponse>
