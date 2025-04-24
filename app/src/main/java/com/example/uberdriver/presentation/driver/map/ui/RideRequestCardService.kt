@@ -43,7 +43,7 @@ class RideRequestCardService(
 
     suspend fun showCard(it: NearbyRideRequests) {
         if (it != null) {
-            binding.get()?.bottomSheet?.mcSheet?.visibility = View.GONE
+            binding.get()?.mcSheet?.visibility = View.GONE
             binding.get()?.cardView?.visibility = View.VISIBLE
             binding.get()?.pickupLocationName?.text =
                 getLocationName(it.pickupLatitude, it.pickupLongitude)
@@ -86,7 +86,7 @@ class RideRequestCardService(
     fun hideCardAndShowSheet() {
         binding.get()?.content?.stopRippleAnimation()
         binding.get()?.cardView?.visibility = View.GONE
-        binding.get()?.bottomSheet?.mcSheet?.visibility = View.VISIBLE
+        binding.get()?.mcSheet?.visibility = View.VISIBLE
         SoundHelper.destroySoundInstance()
     }
 

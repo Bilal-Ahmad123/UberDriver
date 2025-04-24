@@ -258,8 +258,52 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <include
-        android:id="@+id/bottomSheet"
-        layout="@layout/you_are_offline_bottom_sheet_content" />
+    <com.google.android.material.card.MaterialCardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/mc_sheet"
+        app:cardElevation="8dp"
+        android:layout_gravity="bottom"
+        android:background="@android:color/transparent"
+        app:shapeAppearanceOverlay="@style/TopRoundedCorners"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_10sdp"
+            android:orientation="vertical"
+            android:background="@color/white">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/_70sdp"
+                android:layout_height="@dimen/_5sdp"
+                android:layout_gravity="center_horizontal"
+                android:backgroundTint="@color/grey" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_offline"
+                android:layout_marginTop="@dimen/_7sdp"
+                android:layout_gravity="center_horizontal"
+                android:text="You're offline"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_18ssp"
+                android:textStyle="bold" />
+            <View
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_3sdp"
+                android:background="@color/black"
+                android:id="@+id/linear_line"
+                android:layout_marginTop="@dimen/_10sdp"
+                />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

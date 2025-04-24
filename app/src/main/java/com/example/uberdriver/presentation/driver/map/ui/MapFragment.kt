@@ -91,6 +91,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         initializeCardService()
         observeRideRequests()
         observeAcceptRideBtnClicked()
+
     }
 
     private fun initializeCardService() {
@@ -130,6 +131,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         updateDriverMarker()
         initializeRouteCreationHelper()
         initializeRouteNavigationService(googleMap)
+        fetchCurrentLocation()
     }
 
     private fun initializeRouteNavigationService(googleMap: GoogleMap) {
@@ -256,9 +258,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun onGoButtonClickListener() {
         binding?.goButton?.setOnClickListener {
             isGoButtonClicked = true
-            binding?.bottomSheet?.tvOffline?.text = "Going Online"
+            binding?.tvOffline?.text = "Going Online"
             ButtonAnimator.startHorizontalAnimation(
-                binding!!.bottomSheet.linearLine,
+                binding!!.linearLine,
                 requireContext()
             )
             binding?.frameLayout?.visibility = View.GONE
@@ -269,9 +271,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun hideLineView() {
         lifecycleScope.launch {
             delay(2000)
-            binding?.bottomSheet?.tvOffline?.text = "You are Online"
+            binding?.tvOffline?.text = "You are Online"
             ButtonAnimator.stopAnimation()
-            binding?.bottomSheet?.linearLine?.visibility = View.GONE
+            binding?.linearLine?.visibility = View.GONE
         }
     }
 
@@ -333,7 +335,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             )
                         }
                         binding?.goButton?.visibility = View.GONE
-                        binding?.bottomSheet?.mcSheet?.visibility = View.GONE
+                        binding?.mcSheet?.visibility = View.GONE
+
                     }
                 }
             }
