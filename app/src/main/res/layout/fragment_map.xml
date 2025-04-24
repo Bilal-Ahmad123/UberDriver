@@ -7,12 +7,20 @@
     android:layout_height="match_parent"
     tools:context=".presentation.driver.map.ui.MapFragment">
 
+<!--    <fragment-->
+<!--        android:id="@+id/google_map"-->
+<!--        -->
+<!--        android:name="com.google.android.gms.maps.SupportMapFragment"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        tools:context=".presentation.driver.MainActivity" />-->
+
     <fragment
-        android:id="@+id/google_map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:name="com.google.android.libraries.navigation.SupportNavigationFragment"
+         android:id="@+id/google_map"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".presentation.driver.MainActivity" />
+        android:layout_height="match_parent"/>
+
 
 
     <FrameLayout
@@ -56,9 +64,7 @@
 
     </FrameLayout>
 
-    <include
-        android:id="@+id/bottomSheet"
-        layout="@layout/you_are_offline_bottom_sheet_content" />
+
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
@@ -242,6 +248,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:layout_width="match_parent"
+                android:id="@+id/accept_ride"
                 android:layout_height="@dimen/_50sdp"
                 android:backgroundTint="@color/royal_blue"
                 android:text="Accept"
@@ -250,5 +257,9 @@
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <include
+        android:id="@+id/bottomSheet"
+        layout="@layout/you_are_offline_bottom_sheet_content" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

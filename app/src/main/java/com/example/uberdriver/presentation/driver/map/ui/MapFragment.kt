@@ -21,27 +21,30 @@ import com.example.uberdriver.core.common.PermissionManagers
 import com.example.uberdriver.databinding.FragmentMapBinding
 import com.example.uberdriver.domain.remote.socket.location.model.UpdateLocation
 import com.example.uberdriver.presentation.auth.register.viewmodels.VehicleViewModel
+import com.example.uberdriver.presentation.driver.map.services.RouteNavigationService
 import com.example.uberdriver.presentation.driver.map.utilities.RouteCreationHelper
 import com.example.uberdriver.presentation.driver.map.viewmodel.DriverViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.GoogleViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.LocationViewModel
+import com.example.uberdriver.presentation.driver.map.viewmodel.MapAndCardSharedViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.RideViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.SocketViewModel
 import com.example.uberdriver.presentation.splash.viewmodel.DriverRoomViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.navigation.SupportNavigationFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
+
 
 @AndroidEntryPoint
 class MapFragment : Fragment(), OnMapReadyCallback {
@@ -58,9 +61,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val driverViewModel: DriverViewModel by activityViewModels<DriverViewModel>()
     private val vehicleViewModel: VehicleViewModel by activityViewModels<VehicleViewModel>()
     private val googleViewModel: GoogleViewModel by viewModels<GoogleViewModel>()
+    private val mapAndCardSharedViewModel: MapAndCardSharedViewModel by viewModels<MapAndCardSharedViewModel>()
     private var isGoButtonClicked: Boolean = false
     private var rideRequestCardService: RideRequestCardService? = null
     private var routeCreationHelper: RouteCreationHelper? = null
+    private var routeNavigationService: RouteNavigationService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,6 +90,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         fetchContinuousLocation()
         initializeCardService()
         observeRideRequests()
+        observeAcceptRideBtnClicked()
     }
 
     private fun initializeCardService() {
@@ -93,7 +99,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             WeakReference(binding),
             this,
             rideViewModel,
-            requireContext()
+            requireContext(),
+            mapAndCardSharedViewModel
         )
     }
 
@@ -122,6 +129,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
         updateDriverMarker()
         initializeRouteCreationHelper()
+        initializeRouteNavigationService(googleMap)
+    }
+
+    private fun initializeRouteNavigationService(googleMap: GoogleMap) {
+        routeNavigationService = RouteNavigationService(
+            WeakReference(googleMap),
+            requireActivity(),
+            childFragmentManager
+        )
+
+
     }
 
     private fun fetchCurrentLocation() {
@@ -151,7 +169,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun setUpGoogleMap() {
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.google_map) as SupportMapFragment
+            childFragmentManager.findFragmentById(R.id.google_map) as SupportNavigationFragment
         mapFragment.getMapAsync(this)
     }
 
@@ -161,7 +179,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             viewLifecycleOwner.lifecycleScope.launch {
                 FetchLocation.getLocationUpdates(requireContext()).collect {
                     locationViewModel.setDriverLocation(LatLng(it.latitude, it.longitude))
-                    animateCameraToCurrentLocation(it)
+//                    animateCameraToCurrentLocation(it)
                     updateLocation(it)
                     driverRoomViewModel.driver.value.let { dri ->
                         with(socketViewModel) {
@@ -266,14 +284,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         rideViewModel.apply {
             viewLifecycleOwner.lifecycleScope.launch {
                 rideRequests.collectLatest { it ->
-                    rideRequestCardService?.showCard(it)
-                    locationViewModel.location.value?.let { loc ->
-                        routeCreationHelper?.createRoute(
-                            LatLng(loc.latitude, loc.longitude),
-                            LatLng(it.pickupLatitude, it.pickupLongitude),
-                            LatLng(it.dropOffLatitude, it.dropOffLongitude)
-                        )
-                        hideCardAndRoute()
+                    it?.let {
+                        rideRequestCardService?.showCard(it)
+                        locationViewModel.location.value?.let { loc ->
+                            routeCreationHelper?.createRoute(
+                                LatLng(loc.latitude, loc.longitude),
+                                LatLng(it.pickupLatitude, it.pickupLongitude),
+                                LatLng(it.dropOffLatitude, it.dropOffLongitude)
+                            )
+                            hideCardAndRoute()
+                        }
                     }
                 }
             }
@@ -290,11 +310,33 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
-    private fun hideCardAndRoute(){
+    private fun hideCardAndRoute() {
         viewLifecycleOwner.lifecycleScope.launch {
             delay(10000)
             rideRequestCardService?.hideCardAndShowSheet()
             routeCreationHelper?.deleteEverythingOnMap()
+            rideViewModel.rideRequests.emit(null)
+        }
+    }
+
+    private fun observeAcceptRideBtnClicked() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapAndCardSharedViewModel.acceptRideBtnClick.collectLatest {
+                it?.let { t ->
+                    if (t) {
+                        rideViewModel.rideRequests.value?.let { a ->
+                            routeNavigationService?.navigateToPlace(
+                                LatLng(
+                                    a.pickupLatitude,
+                                    a.pickupLongitude
+                                )
+                            )
+                        }
+                        binding?.goButton?.visibility = View.GONE
+                        binding?.bottomSheet?.mcSheet?.visibility = View.GONE
+                    }
+                }
+            }
         }
     }
 }

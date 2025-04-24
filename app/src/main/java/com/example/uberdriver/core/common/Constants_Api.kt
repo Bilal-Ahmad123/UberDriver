@@ -1,7 +1,7 @@
 package com.example.uberdriver.core.common
 
 object Constants_Api {
-    private const val END_POINT = "192.168.43.14"
+    private const val END_POINT = "192.168.18.65"
     const val BACKEND_AUTH_API = "http://${END_POINT}:5232/"
     const val BACKEND_DRIVER_API = "http://${END_POINT}:5231/"
     const val DB_NAME = "uber_driver_db"

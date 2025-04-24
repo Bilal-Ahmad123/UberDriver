@@ -13,6 +13,7 @@ import com.example.uberdriver.data.remote.api.backend.socket.ride.model.NearbyRi
 import com.example.uberdriver.databinding.FragmentMapBinding
 import com.example.uberdriver.presentation.driver.map.utilities.RouteCreationHelper
 import com.example.uberdriver.presentation.driver.map.viewmodel.LocationViewModel
+import com.example.uberdriver.presentation.driver.map.viewmodel.MapAndCardSharedViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.RideViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -24,20 +25,20 @@ class RideRequestCardService(
     private val binding: WeakReference<FragmentMapBinding>,
     private val viewLifecycleOwner: LifecycleOwner,
     private val rideViewModel: RideViewModel,
-    private val context: Context
+    private val context: Context,
+    private val mapAndCardSharedModel : MapAndCardSharedViewModel
 ) {
 
 
     init {
         startObservingNearbyRideRequests()
+        setRideAcceptListener()
     }
 
     private fun startObservingNearbyRideRequests() {
         rideViewModel.startObservingNearbyRideRequests()
         rideViewModel.observeRideRequests()
     }
-
-
 
 
     suspend fun showCard(it: NearbyRideRequests) {
@@ -82,12 +83,20 @@ class RideRequestCardService(
     }
 
 
-     fun hideCardAndShowSheet() {
-            binding.get()?.content?.stopRippleAnimation()
-            binding.get()?.cardView?.visibility = View.GONE
-            binding.get()?.bottomSheet?.mcSheet?.visibility = View.VISIBLE
-            SoundHelper.destroySoundInstance()
+    fun hideCardAndShowSheet() {
+        binding.get()?.content?.stopRippleAnimation()
+        binding.get()?.cardView?.visibility = View.GONE
+        binding.get()?.bottomSheet?.mcSheet?.visibility = View.VISIBLE
+        SoundHelper.destroySoundInstance()
+    }
+
+    private fun setRideAcceptListener(){
+        binding.get()?.acceptRide?.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                mapAndCardSharedModel.setRideBtnClicked(true)
+            }
         }
+    }
 
 
 }

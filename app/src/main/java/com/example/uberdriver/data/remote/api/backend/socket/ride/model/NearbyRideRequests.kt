@@ -7,5 +7,6 @@ data class NearbyRideRequests(
     val pickupLongitude: Double,
     val pickupLatitude: Double,
     val dropOffLongitude: Double,
-    val dropOffLatitude: Double
+    val dropOffLatitude: Double,
+    val id: String = UUID.randomUUID().toString()
 )

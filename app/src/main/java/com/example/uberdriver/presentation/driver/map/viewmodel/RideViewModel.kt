@@ -17,7 +17,7 @@ class RideViewModel @Inject constructor(
     private val startObservingNearbyRideRequestsUseCase: StartObservingNearbyRideRequests,
     private val observeRideRequestsUseCase: ObserveRideRequests
 ) : BaseViewModel(dispatcher) {
-    private val _rideRequests = MutableSharedFlow<NearbyRideRequests>()
+    private val _rideRequests = MutableStateFlow<NearbyRideRequests?>(null)
     val rideRequests = _rideRequests
 
     fun startObservingNearbyRideRequests(){

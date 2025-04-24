@@ -9,8 +9,6 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import com.directions.route.Routing
-import com.directions.route.Routing.Builder
 import com.example.uberdriver.R
 import com.example.uberdriver.core.common.Resource
 import com.example.uberdriver.presentation.driver.map.viewmodel.GoogleViewModel
@@ -43,12 +41,10 @@ class RouteCreationHelper(
     private var backgroundPolyline: Polyline? = null
     private var pickUpMarker: Marker? = null
     private var dropOffMarker: Marker? = null
-    private var routing: Builder? = null
     private var pickUp: LatLng? = null
     private var dropOff: LatLng? = null
 
     private fun initializeRouteInstance() {
-        routing = Routing.Builder()
     }
 
     init {

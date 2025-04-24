@@ -7,6 +7,5 @@ import javax.inject.Inject
 class DriverDetailsViewModel @Inject constructor(dispatcher: IDispatchers) : BaseViewModel(dispatcher) {
 
     fun fetchDriverDetails() {
-
     }
 }
