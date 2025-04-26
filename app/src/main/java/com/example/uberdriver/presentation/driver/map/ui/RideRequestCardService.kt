@@ -90,6 +90,12 @@ class RideRequestCardService(
         SoundHelper.destroySoundInstance()
     }
 
+    fun hideCard(){
+        binding.get()?.mcSheet?.visibility = View.GONE
+        binding.get()?.cardView?.visibility = View.GONE
+        SoundHelper.destroySoundInstance()
+    }
+
     private fun setRideAcceptListener(){
         binding.get()?.acceptRide?.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {

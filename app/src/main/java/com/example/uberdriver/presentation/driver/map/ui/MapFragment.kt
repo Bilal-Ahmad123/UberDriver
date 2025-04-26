@@ -40,6 +40,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.navigation.SupportNavigationFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -61,7 +62,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val driverViewModel: DriverViewModel by activityViewModels<DriverViewModel>()
     private val vehicleViewModel: VehicleViewModel by activityViewModels<VehicleViewModel>()
     private val googleViewModel: GoogleViewModel by viewModels<GoogleViewModel>()
-    private val mapAndCardSharedViewModel: MapAndCardSharedViewModel by viewModels<MapAndCardSharedViewModel>()
+    private val mapAndCardSharedViewModel: MapAndCardSharedViewModel by activityViewModels<MapAndCardSharedViewModel>()
     private var isGoButtonClicked: Boolean = false
     private var rideRequestCardService: RideRequestCardService? = null
     private var routeCreationHelper: RouteCreationHelper? = null
@@ -91,7 +92,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         initializeCardService()
         observeRideRequests()
         observeAcceptRideBtnClicked()
-
+        observeRideBtnClicked()
+        observePickUpLocationReached()
     }
 
     private fun initializeCardService() {
@@ -138,7 +140,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         routeNavigationService = RouteNavigationService(
             WeakReference(googleMap),
             requireActivity(),
-            childFragmentManager
+            childFragmentManager, rideViewModel,
+            mapAndCardSharedViewModel,
+            this,
+            WeakReference(context)
         )
 
 
@@ -312,8 +317,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         )
     }
 
+    private var job: Job? = null
     private fun hideCardAndRoute() {
-        viewLifecycleOwner.lifecycleScope.launch {
+        job = viewLifecycleOwner.lifecycleScope.launch {
             delay(10000)
             rideRequestCardService?.hideCardAndShowSheet()
             routeCreationHelper?.deleteEverythingOnMap()
@@ -326,6 +332,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mapAndCardSharedViewModel.acceptRideBtnClick.collectLatest {
                 it?.let { t ->
                     if (t) {
+                        hideCardAndOtherStuff()
                         rideViewModel.rideRequests.value?.let { a ->
                             routeNavigationService?.navigateToPlace(
                                 LatLng(
@@ -334,12 +341,58 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 )
                             )
                         }
-                        binding?.goButton?.visibility = View.GONE
-                        binding?.mcSheet?.visibility = View.GONE
-
                     }
                 }
             }
         }
+    }
+
+    private fun hideCardAndOtherStuff() {
+        binding?.goButton?.visibility = View.GONE
+        driverMarker?.isVisible = false
+        routeCreationHelper?.deleteEverythingOnMap()
+        rideRequestCardService?.hideCard()
+        job?.cancel(null)
+    }
+
+
+    private fun observeRideBtnClicked() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapAndCardSharedViewModel.apply {
+                startRideClick.collectLatest {
+                    if (it) {
+                        rideViewModel.rideRequests.value?.let { a ->
+                            routeNavigationService?.navigateToPlace(
+                                LatLng(
+                                    a.dropOffLatitude,
+                                    a.dropOffLongitude
+                                )
+                            )
+                            rideViewModel.rideRequests.emit(null)
+                            mapAndCardSharedViewModel.apply {
+                                setPickUpLocationReached(false)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observePickUpLocationReached() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapAndCardSharedViewModel.apply {
+                reachPickUpLocation.collectLatest {
+                    if (it) {
+                        mapAndCardSharedViewModel.setPickUpLocationReached(false)
+                        binding?.bottomSheet?.visibility = View.VISIBLE
+                    }
+                }
+            }
+        }
+    }
+
+    private fun observeDropOffLocationReached(){
+
     }
 }
