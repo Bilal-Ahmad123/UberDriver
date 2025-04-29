@@ -104,8 +104,8 @@ class RouteCreationHelper(
             val (fg, bg) = CustomMapAnimator.animateRoute(googleMap.get()!!, decodedRoutes)
             foregroundPolyline = fg
             backgroundPolyline = bg
-            MapAnimator.setPrimaryLineColor(Color.parseColor("#000000"))
-            MapAnimator.setSecondaryLineColor(Color.parseColor("#ffffff"))
+            CustomMapAnimator.setPrimaryLineColor(Color.parseColor("#000000"))
+            CustomMapAnimator.setSecondaryLineColor(Color.parseColor("#ffffff"))
             pickUpMarker()
             dropOffMarker()
             Log.d("DecodedRoute",decodedRoutes.toString())

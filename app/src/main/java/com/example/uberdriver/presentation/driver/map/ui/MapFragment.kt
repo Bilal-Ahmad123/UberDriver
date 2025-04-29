@@ -18,6 +18,8 @@ import com.example.uberdriver.core.common.FetchLocation
 import com.example.uberdriver.core.common.HRMarkerAnimation
 import com.example.uberdriver.core.common.Helper
 import com.example.uberdriver.core.common.PermissionManagers
+import com.example.uberdriver.data.remote.api.backend.socket.ride.model.NearbyRideRequests
+import com.example.uberdriver.data.remote.api.backend.socket.ride.model.TripLocation
 import com.example.uberdriver.databinding.FragmentMapBinding
 import com.example.uberdriver.domain.remote.socket.location.model.UpdateLocation
 import com.example.uberdriver.presentation.auth.register.viewmodels.VehicleViewModel
@@ -103,7 +105,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             this,
             rideViewModel,
             requireContext(),
-            mapAndCardSharedViewModel
+            mapAndCardSharedViewModel,
+            driverViewModel
         )
     }
 
@@ -340,11 +343,30 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                     a.pickupLongitude
                                 )
                             )
+                            startSendingContinuousTripUpdates(a)
                         }
                     }
                 }
             }
         }
+    }
+
+    private var tripJob:Job? = null
+
+    private fun startSendingContinuousTripUpdates(ride:NearbyRideRequests){
+       tripJob = viewLifecycleOwner.lifecycleScope.launch {
+            rideViewModel.apply {
+                locationViewModel.location.collectLatest {
+                    it?.let { a->
+                        sendTripLocation(TripLocation(ride.rideId,driverViewModel.driverId!!,ride.riderId,a.latitude,a.longitude))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun cancelTripUpdates(){
+        tripJob?.cancel(null)
     }
 
     private fun hideCardAndOtherStuff() {
@@ -392,7 +414,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun observeDropOffLocationReached(){
+    private fun sendContinuousRideUpdates(){
 
     }
 }

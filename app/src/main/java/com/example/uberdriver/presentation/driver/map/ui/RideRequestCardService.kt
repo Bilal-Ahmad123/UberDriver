@@ -11,11 +11,11 @@ import com.example.uberdriver.core.common.Helper
 import com.example.uberdriver.core.common.SoundHelper
 import com.example.uberdriver.data.remote.api.backend.socket.ride.model.NearbyRideRequests
 import com.example.uberdriver.databinding.FragmentMapBinding
-import com.example.uberdriver.presentation.driver.map.utilities.RouteCreationHelper
+import com.example.uberdriver.domain.remote.socket.ride.model.AcceptRideRequest
+import com.example.uberdriver.presentation.driver.map.viewmodel.DriverViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.LocationViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.MapAndCardSharedViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.RideViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.util.Locale
@@ -26,7 +26,8 @@ class RideRequestCardService(
     private val viewLifecycleOwner: LifecycleOwner,
     private val rideViewModel: RideViewModel,
     private val context: Context,
-    private val mapAndCardSharedModel : MapAndCardSharedViewModel
+    private val mapAndCardSharedModel: MapAndCardSharedViewModel,
+    private val driverViewModel: DriverViewModel
 ) {
 
 
@@ -90,19 +91,36 @@ class RideRequestCardService(
         SoundHelper.destroySoundInstance()
     }
 
-    fun hideCard(){
+    fun hideCard() {
         binding.get()?.mcSheet?.visibility = View.GONE
         binding.get()?.cardView?.visibility = View.GONE
         SoundHelper.destroySoundInstance()
     }
 
-    private fun setRideAcceptListener(){
+    private fun setRideAcceptListener() {
         binding.get()?.acceptRide?.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 mapAndCardSharedModel.setRideBtnClicked(true)
+                acceptRide()
             }
         }
     }
 
+
+    private fun acceptRide() {
+        rideViewModel.rideRequests.value?.let { ride ->
+            locationViewModel.location.value?.let { loc ->
+                rideViewModel.acceptRideRequest(
+                    AcceptRideRequest(
+                        ride.rideId,
+                        driverViewModel.driverId!!,
+                        loc.latitude,
+                        loc.longitude,
+                        ride.riderId
+                    )
+                )
+            }
+        }
+    }
 
 }

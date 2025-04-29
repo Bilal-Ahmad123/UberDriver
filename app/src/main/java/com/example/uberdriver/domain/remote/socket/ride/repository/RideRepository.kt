@@ -2,8 +2,10 @@ package com.example.uberdriver.domain.remote.socket.ride.repository
 
 import com.example.uberdriver.core.common.SocketMethods
 import com.example.uberdriver.data.remote.api.backend.socket.ride.model.NearbyRideRequests
+import com.example.uberdriver.data.remote.api.backend.socket.ride.model.TripLocation
 import com.example.uberdriver.data.remote.api.backend.socket.ride.repository.RideRepository
 import com.example.uberdriver.data.remote.api.backend.socket.socketBroker.service.SocketBroker
+import com.example.uberdriver.domain.remote.socket.ride.model.AcceptRideRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +25,7 @@ class RideRepository @Inject constructor(private val broker: SocketBroker) : Rid
                 if (getHubConnection() != null) {
                     getHubConnection()?.on(
                         SocketMethods.SEND_RIDE_REQUEST_TO_DRIVERS,
-                        { userId: String, pickupLongitude: Double, pickupLatitude: Double, dropOffLongitude: Double, dropOffLatitude: Double ->
+                        { userId: String, pickupLongitude: Double, pickupLatitude: Double, dropOffLongitude: Double, dropOffLatitude: Double,rideId: String ->
                             CoroutineScope(Dispatchers.IO).launch {
                                 _rideRequests.emit(
                                     NearbyRideRequests(
@@ -31,7 +33,8 @@ class RideRepository @Inject constructor(private val broker: SocketBroker) : Rid
                                         pickupLongitude,
                                         pickupLatitude,
                                         dropOffLongitude,
-                                        dropOffLatitude
+                                        dropOffLatitude,
+                                        rideId = UUID.fromString(rideId)
                                     )
                                 )
                             }
@@ -41,11 +44,22 @@ class RideRepository @Inject constructor(private val broker: SocketBroker) : Rid
                         Double::class.java,
                         Double::class.java,
                         Double::class.java,
-                    )
+                        String::class.java
+                        )
                 }
             }
         }
     }
 
     override fun observeRideRequest(): Flow<NearbyRideRequests> = rideRequests
+
+    override fun acceptRide(
+        ride:AcceptRideRequest
+    ) {
+        broker.send<AcceptRideRequest>(ride,SocketMethods.ACCEPT_RIDE)
+    }
+
+    override fun sendTripLocation(trip: TripLocation) {
+        broker.send<TripLocation>(trip,SocketMethods.TRIP_UPDATES)
+    }
 }
