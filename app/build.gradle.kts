@@ -45,7 +45,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -112,15 +111,10 @@ dependencies {
     implementation("com.github.skydoves:powerspinner:1.2.7")
     implementation ("com.github.traex.rippleeffect:library:1.3")
     implementation ("com.skyfishjy.ripplebackground:library:1.0.1")
-    implementation("com.google.maps.android:android-maps-utils:3.9.0") {
-        exclude(group = "com.google.android.gms", module = "play-services-maps")
-    }
-    implementation("com.github.tintinscorpion:Dual-color-Polyline-Animation:1.2") {
-        exclude(group = "com.google.android.gms", module = "play-services-maps")
-    }
+    implementation("com.google.maps.android:android-maps-utils:3.9.0")
+    implementation("com.github.tintinscorpion:Dual-color-Polyline-Animation:1.2")
 
 
-    implementation("com.google.android.libraries.navigation:navigation:6.2.0")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs_nio:2.0.4")
+
 
 }

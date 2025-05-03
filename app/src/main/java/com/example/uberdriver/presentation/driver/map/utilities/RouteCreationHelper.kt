@@ -108,7 +108,6 @@ class RouteCreationHelper(
             CustomMapAnimator.setSecondaryLineColor(Color.parseColor("#ffffff"))
             pickUpMarker()
             dropOffMarker()
-            Log.d("DecodedRoute",decodedRoutes.toString())
             animateCameraToFillRoute(decodedRoutes)
         }
 

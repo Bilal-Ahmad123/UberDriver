@@ -2,6 +2,7 @@ package com.example.uberdriver.presentation.driver.map.ui
 
 import android.content.Context
 import android.location.Location
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -110,6 +111,8 @@ class RideRequestCardService(
     private fun acceptRide() {
         rideViewModel.rideRequests.value?.let { ride ->
             locationViewModel.location.value?.let { loc ->
+                Log.d("RideRequest",ride.toString())
+                Log.d("RideRequest",loc.toString())
                 rideViewModel.acceptRideRequest(
                     AcceptRideRequest(
                         ride.rideId,

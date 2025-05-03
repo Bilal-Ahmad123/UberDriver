@@ -5,5 +5,5 @@ import com.google.android.gms.maps.model.LatLng
 import retrofit2.Response
 
 interface GoogleRepository {
-    suspend fun directionsResponse(origin: LatLng, destination: LatLng,wayPoints:LatLng): Response<DirectionsResponse>
+    suspend fun directionsResponse(origin: LatLng, destination: LatLng,wayPoints:LatLng? = null): Response<DirectionsResponse>
 }

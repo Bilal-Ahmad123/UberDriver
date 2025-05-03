@@ -31,16 +31,17 @@ import com.example.uberdriver.presentation.driver.map.viewmodel.LocationViewMode
 import com.example.uberdriver.presentation.driver.map.viewmodel.MapAndCardSharedViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.RideViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.SocketViewModel
+import com.example.uberdriver.presentation.driver.map.viewmodel.TripViewModel
 import com.example.uberdriver.presentation.splash.viewmodel.DriverRoomViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.libraries.navigation.SupportNavigationFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -65,6 +66,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val vehicleViewModel: VehicleViewModel by activityViewModels<VehicleViewModel>()
     private val googleViewModel: GoogleViewModel by viewModels<GoogleViewModel>()
     private val mapAndCardSharedViewModel: MapAndCardSharedViewModel by activityViewModels<MapAndCardSharedViewModel>()
+    private val tripViewModel:TripViewModel by viewModels<TripViewModel>()
     private var isGoButtonClicked: Boolean = false
     private var rideRequestCardService: RideRequestCardService? = null
     private var routeCreationHelper: RouteCreationHelper? = null
@@ -142,9 +144,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun initializeRouteNavigationService(googleMap: GoogleMap) {
         routeNavigationService = RouteNavigationService(
             WeakReference(googleMap),
-            requireActivity(),
-            childFragmentManager, rideViewModel,
+            tripViewModel,
             mapAndCardSharedViewModel,
+            locationViewModel,
             this,
             WeakReference(context)
         )
@@ -179,7 +181,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun setUpGoogleMap() {
         val mapFragment =
-            childFragmentManager.findFragmentById(R.id.google_map) as SupportNavigationFragment
+            childFragmentManager.findFragmentById(R.id.google_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
@@ -189,7 +191,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             viewLifecycleOwner.lifecycleScope.launch {
                 FetchLocation.getLocationUpdates(requireContext()).collect {
                     locationViewModel.setDriverLocation(LatLng(it.latitude, it.longitude))
-//                    animateCameraToCurrentLocation(it)
+                    animateCameraToCurrentLocation(it)
                     updateLocation(it)
                     driverRoomViewModel.driver.value.let { dri ->
                         with(socketViewModel) {
@@ -337,7 +339,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     if (t) {
                         hideCardAndOtherStuff()
                         rideViewModel.rideRequests.value?.let { a ->
-                            routeNavigationService?.navigateToPlace(
+                            routeNavigationService?.createRoute(
                                 LatLng(
                                     a.pickupLatitude,
                                     a.pickupLongitude
@@ -384,12 +386,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 startRideClick.collectLatest {
                     if (it) {
                         rideViewModel.rideRequests.value?.let { a ->
-                            routeNavigationService?.navigateToPlace(
-                                LatLng(
-                                    a.dropOffLatitude,
-                                    a.dropOffLongitude
-                                )
-                            )
+                            routeNavigationService?.createRoute(LatLng(a.pickupLatitude,a.pickupLongitude))
                             rideViewModel.rideRequests.emit(null)
                             mapAndCardSharedViewModel.apply {
                                 setPickUpLocationReached(false)
