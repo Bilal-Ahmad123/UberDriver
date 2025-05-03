@@ -147,6 +147,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             tripViewModel,
             mapAndCardSharedViewModel,
             locationViewModel,
+            googleViewModel,
             this,
             WeakReference(context)
         )
@@ -216,7 +217,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun animateCameraToCurrentLocation(lastKnownLocation: Location?) {
         if (googleMap != null) {
             val userLatLng = lastKnownLocation?.let { LatLng(it.latitude, it.longitude) }
-            googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng!!, 13.0f))
+            viewLifecycleOwner.lifecycleScope.launch {
+                googleViewModel.cameraZoomLevel.collectLatest {
+                    googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng!!, it))
+                }
+            }
         }
     }
 
@@ -373,7 +378,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun hideCardAndOtherStuff() {
         binding?.goButton?.visibility = View.GONE
-        driverMarker?.isVisible = false
         routeCreationHelper?.deleteEverythingOnMap()
         rideRequestCardService?.hideCard()
         job?.cancel(null)

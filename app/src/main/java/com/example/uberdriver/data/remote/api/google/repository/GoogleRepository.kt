@@ -6,4 +6,6 @@ import retrofit2.Response
 
 interface GoogleRepository {
     suspend fun directionsResponse(origin: LatLng, destination: LatLng,wayPoints:LatLng? = null): Response<DirectionsResponse>
+    suspend fun directionsResponseNoWaypoints(origin: LatLng, destination: LatLng): Response<DirectionsResponse>
+
 }

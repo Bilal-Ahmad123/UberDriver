@@ -9,6 +9,7 @@ import com.example.uberdriver.domain.remote.google.usecase.GetDirectionResponse
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -20,6 +21,9 @@ class GoogleViewModel @Inject constructor(
 
     private val _directionsResponse = MutableStateFlow<Resource<DirectionsResponse>?>(null)
     val directionResponse get() = _directionsResponse
+
+    private var _cameraZoomLevel = MutableStateFlow<Float>(13f)
+    val cameraZoomLevel get() = _cameraZoomLevel.asStateFlow()
     fun getDirectionsResponse(origin:LatLng,destination:LatLng,wayPoints:LatLng){
         launchOnBack {
             _directionsResponse.emit(Resource.Loading())
@@ -35,5 +39,9 @@ class GoogleViewModel @Inject constructor(
             }
         }
         return Resource.Error("Error ${response.code()}: ${response.message()}")
+    }
+
+    suspend fun setCameraZoomLevel(value:Float){
+        _cameraZoomLevel.emit(value)
     }
 }

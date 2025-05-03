@@ -6,6 +6,7 @@ import com.example.uberdriver.core.common.BaseViewModel
 import com.example.uberdriver.core.common.Resource
 import com.example.uberdriver.core.dispatcher.IDispatchers
 import com.example.uberdriver.domain.remote.google.usecase.GetDirectionResponse
+import com.example.uberdriver.domain.remote.google.usecase.GetDirectionsResponseNoWaypoints
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TripViewModel @Inject constructor(
     dispatcher: IDispatchers,
-    private val directionResponseUseCase: GetDirectionResponse
+    private val directionsResponseNoWaypoints: GetDirectionsResponseNoWaypoints
     ) : BaseViewModel(dispatcher) {
     private val _directions = MutableSharedFlow<Resource<DirectionsResponse>?>()
     val directions get() = _directions.asSharedFlow()
@@ -33,7 +34,7 @@ class TripViewModel @Inject constructor(
 
     fun directionsRequest(origin: LatLng, destination: LatLng) {
         launchOnBack {
-            val response = directionResponseUseCase(origin, destination,null)
+            val response = directionsResponseNoWaypoints(origin, destination)
             Log.d("directionsRequest", "directionsRequest: $response")
             _directions.emit(handleResponse<DirectionsResponse>(response))
         }

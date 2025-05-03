@@ -9,11 +9,19 @@ import retrofit2.http.Query
 interface GoogleMapService {
     @GET("maps/api/directions/json")
     suspend fun directionsRequest(
-        @Query("origin") origin:String,
-        @Query("destination") destination:String,
-        @Query("waypoints") waypoints:String,
-        @Query("key") accessToken: String =  BuildConfig.MAPS_API_KEY,
-        @Query("mode") mode:String = "driving"
+        @Query("origin") origin: String,
+        @Query("destination") destination: String,
+        @Query("waypoints") waypoints: String? = null,
+        @Query("key") accessToken: String = BuildConfig.MAPS_API_KEY,
+        @Query("mode") mode: String = "driving"
+    ): Response<DirectionsResponse>
+
+    @GET("maps/api/directions/json")
+    suspend fun directionsRequestNoWayPoints(
+        @Query("origin") origin: String,
+        @Query("destination") destination: String,
+        @Query("key") accessToken: String = BuildConfig.MAPS_API_KEY,
+        @Query("mode") mode: String = "driving"
     ): Response<DirectionsResponse>
 
 }
