@@ -381,7 +381,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 startRideClick.collectLatest {
                     if (it) {
                         rideViewModel.rideRequests.value?.let { a ->
-                            routeNavigationService?.createRoute(LatLng(a.pickupLatitude,a.pickupLongitude))
+                            routeNavigationService?.createRoute(LatLng(a.dropOffLatitude,a.dropOffLongitude))
                             rideViewModel.rideRequests.emit(null)
                             mapAndCardSharedViewModel.apply {
                                 setPickUpLocationReached(false)

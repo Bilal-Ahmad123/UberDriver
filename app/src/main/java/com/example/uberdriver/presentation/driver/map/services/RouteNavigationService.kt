@@ -23,7 +23,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.maps.android.PolyUtil
-import com.google.maps.android.SphericalUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -43,17 +42,16 @@ class RouteNavigationService(
     private var polylineOptions: PolylineOptions? = null
     private var routePoints: MutableList<LatLng>? = null
     private var polyline: Polyline? = null
-    private var riderPickUpLocation: LatLng? = null
-    private var isPickUpRouting = true
+    private var location: LatLng? = null
     private var duration: Duration? = null
     private var distance: Distance? = null
 
     fun createRoute(
-        pickUpLocation: LatLng,
+        location: LatLng,
     ) {
-        riderPickUpLocation = pickUpLocation
+        this.location = location
         locationViewModel.location.value?.let {
-            tripViewModel.directionsRequest(pickUpLocation, it)
+            tripViewModel.directionsRequest(location, it)
             observeDirectionsResponse()
             observeLocationChanges()
             observeDistanceMatrixResponse()
@@ -177,7 +175,7 @@ class RouteNavigationService(
             )
         ) {
             tripViewModel.directionsRequest(
-                riderPickUpLocation!!,
+                location!!,
                 trip
             )
         }
@@ -188,14 +186,16 @@ class RouteNavigationService(
             if (it.size <= 2) {
                 driverViewModel?.driverId?.let { a ->
                     cleanMap()
-                    tripViewModel.reachedRiderPickUpSpot(
-                        ReachedRider(
-                            a,
-                            true,
-                            value.latitude,
-                            value.longitude
+                    tripViewModel.ride.value?.let {trip->
+                        tripViewModel.reachedRiderPickUpSpot(
+                            ReachedRider(
+                                trip.riderId,
+                                a,
+                                trip.rideId,
+                                true,
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -230,11 +230,11 @@ class RouteNavigationService(
     var handler:Handler? = Handler(Looper.getMainLooper())
     val runnable = object : Runnable {
         override fun run() {
-            getDistanceMatrix(locationViewModel.location.value!!, riderPickUpLocation!!)
+            getDistanceMatrix(locationViewModel.location.value!!, location!!)
         }
     }
 
     private fun registerDistanceHandler(){
-        handler?.postDelayed(runnable,60000)
+        handler?.postDelayed(runnable,10000)
     }
 }
