@@ -47,9 +47,4 @@ class RideViewModel @Inject constructor(
         }
     }
 
-    fun sendTripLocation(trip:TripLocation){
-        launchOnBack {
-            tripLocationUseCase(trip)
-        }
-    }
 }

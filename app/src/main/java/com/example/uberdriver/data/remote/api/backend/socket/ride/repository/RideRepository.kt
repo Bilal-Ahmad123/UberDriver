@@ -10,5 +10,4 @@ interface RideRepository {
     fun startObservingNearbyRideRequests()
     fun observeRideRequest():Flow<NearbyRideRequests>
     fun acceptRide(ride:AcceptRideRequest)
-    fun sendTripLocation(trip: TripLocation)
 }

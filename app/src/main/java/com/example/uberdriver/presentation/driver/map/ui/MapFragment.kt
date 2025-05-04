@@ -42,6 +42,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.maps.android.SphericalUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -106,6 +107,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             WeakReference(binding),
             this,
             rideViewModel,
+            tripViewModel,
             requireContext(),
             mapAndCardSharedViewModel,
             driverViewModel
@@ -148,6 +150,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mapAndCardSharedViewModel,
             locationViewModel,
             googleViewModel,
+            driverViewModel,
             this,
             WeakReference(context)
         )
@@ -350,7 +353,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                     a.pickupLongitude
                                 )
                             )
-                            startSendingContinuousTripUpdates(a)
                         }
                     }
                 }
@@ -360,17 +362,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private var tripJob:Job? = null
 
-    private fun startSendingContinuousTripUpdates(ride:NearbyRideRequests){
-       tripJob = viewLifecycleOwner.lifecycleScope.launch {
-            rideViewModel.apply {
-                locationViewModel.location.collectLatest {
-                    it?.let { a->
-                        sendTripLocation(TripLocation(ride.rideId,driverViewModel.driverId!!,ride.riderId,a.latitude,a.longitude))
-                    }
-                }
-            }
-        }
-    }
 
     private fun cancelTripUpdates(){
         tripJob?.cancel(null)
@@ -415,7 +406,4 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun sendContinuousRideUpdates(){
-
-    }
 }

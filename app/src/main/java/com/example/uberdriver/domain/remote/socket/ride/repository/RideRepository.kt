@@ -58,8 +58,4 @@ class RideRepository @Inject constructor(private val broker: SocketBroker) : Rid
     ) {
         broker.send<AcceptRideRequest>(ride,SocketMethods.ACCEPT_RIDE)
     }
-
-    override fun sendTripLocation(trip: TripLocation) {
-        broker.send<TripLocation>(trip,SocketMethods.TRIP_UPDATES)
-    }
 }

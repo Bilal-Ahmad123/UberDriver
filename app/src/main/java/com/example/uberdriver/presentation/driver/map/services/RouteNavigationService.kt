@@ -2,10 +2,17 @@ package com.example.uberdriver.presentation.driver.map.services
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.example.uber.data.remote.api.googleMaps.models.directionsResponse.Distance
+import com.example.uber.data.remote.api.googleMaps.models.directionsResponse.Duration
 import com.example.uberdriver.core.common.PolyUtilExtension
+import com.example.uberdriver.data.remote.api.backend.socket.ride.model.TripLocation
+import com.example.uberdriver.data.remote.api.backend.socket.trip.model.ReachedRider
+import com.example.uberdriver.presentation.driver.map.viewmodel.DriverViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.GoogleViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.LocationViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.MapAndCardSharedViewModel
@@ -16,6 +23,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.maps.android.PolyUtil
+import com.google.maps.android.SphericalUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,14 +36,17 @@ class RouteNavigationService(
     private val mapAndCardSharedViewModel: MapAndCardSharedViewModel,
     private val locationViewModel: LocationViewModel,
     private val googleViewModel: GoogleViewModel,
+    private val driverViewModel: DriverViewModel,
     private val viewLifecycleOwner: LifecycleOwner,
     private val context: WeakReference<Context>
 ) {
     private var polylineOptions: PolylineOptions? = null
-    private var routePoints: List<LatLng>? = null
+    private var routePoints: MutableList<LatLng>? = null
     private var polyline: Polyline? = null
     private var riderPickUpLocation: LatLng? = null
     private var isPickUpRouting = true
+    private var duration: Duration? = null
+    private var distance: Distance? = null
 
     fun createRoute(
         pickUpLocation: LatLng,
@@ -45,6 +56,8 @@ class RouteNavigationService(
             tripViewModel.directionsRequest(pickUpLocation, it)
             observeDirectionsResponse()
             observeLocationChanges()
+            observeDistanceMatrixResponse()
+            registerDistanceHandler()
         }
     }
 
@@ -60,6 +73,12 @@ class RouteNavigationService(
                 trimmedPoints?.let { b ->
                     polyline?.points = b
                 }
+                trimmedPoints?.let { b ->
+                    if (b.size <= 2) {
+                        driverReachedToLocation(loc)
+                    }
+                }
+
             }
 
         }
@@ -71,7 +90,11 @@ class RouteNavigationService(
                 directions.collectLatest {
                     Log.d("DirectionsResponse", it?.data.toString())
                     if (it?.data!!.routes.isNotEmpty()) {
-                        createRoute(it.data!!.routes[0].overview_polyline!!.points)
+                        createRoute(
+                            it.data!!.routes[0].overview_polyline!!.points,
+                            it.data.routes[0].legs[0].duration,
+                            it.data.routes[0].legs[0].distance
+                        )
                     }
                 }
 
@@ -79,8 +102,12 @@ class RouteNavigationService(
         }
     }
 
-    private fun createRoute(line: String) {
-        val routePoints: List<LatLng> = PolyUtil.decode(line)
+    private fun createRoute(
+        line: String,
+        duration: Duration,
+        distance: com.example.uber.data.remote.api.googleMaps.models.directionsResponse.Distance
+    ) {
+        val routePoints: MutableList<LatLng> = PolyUtil.decode(line)
         if (routePoints.size > 1) {
             this.routePoints = routePoints
             polylineOptions = PolylineOptions()
@@ -93,6 +120,8 @@ class RouteNavigationService(
                 polyline = googleMap.get()?.addPolyline(it)
             }
             updateMapZoomLevel()
+            this.distance = distance
+            this.duration = duration
         }
     }
 
@@ -112,6 +141,27 @@ class RouteNavigationService(
                 it?.let { a ->
                     checkIfDriverLocationOnRoute(a)
                     removeTravelledPolyLine(a)
+                    sendTripLocationUpdates(a)
+                }
+            }
+        }
+    }
+
+    private fun sendTripLocationUpdates(value: LatLng) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            if (distance != null && duration != null) {
+                tripViewModel.ride.value?.let {ri->
+                    tripViewModel.sendTripLocation(
+                        TripLocation(
+                            ri.rideId,
+                            driverViewModel.driverId!!,
+                            ri.riderId,
+                            value.latitude,
+                            value.longitude,
+                            distance!!.value,
+                            duration!!.value
+                        )
+                    )
                 }
             }
         }
@@ -120,7 +170,7 @@ class RouteNavigationService(
     private fun checkIfDriverLocationOnRoute(trip: LatLng) {
 
         if (routePoints != null && !PolyUtil.isLocationOnPath(
-                LatLng(trip.latitude, trip.longitude),
+                trip,
                 routePoints,
                 true,
                 50.0
@@ -128,10 +178,63 @@ class RouteNavigationService(
         ) {
             tripViewModel.directionsRequest(
                 riderPickUpLocation!!,
-                LatLng(trip.latitude, trip.longitude)
+                trip
             )
         }
     }
 
+    private fun driverReachedToLocation(value: LatLng) {
+        routePoints?.let {
+            if (it.size <= 2) {
+                driverViewModel?.driverId?.let { a ->
+                    cleanMap()
+                    tripViewModel.reachedRiderPickUpSpot(
+                        ReachedRider(
+                            a,
+                            true,
+                            value.latitude,
+                            value.longitude
+                        )
+                    )
+                }
+            }
+        }
+    }
 
+    private fun getDistanceMatrix(destination: LatLng, origin: LatLng) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            googleViewModel.getDistanceMatrix(destination, origin)
+        }
+    }
+
+    private fun observeDistanceMatrixResponse() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            googleViewModel.distanceMatrix.value?.let { res ->
+                distance =res.data?.rows?.get(0)?.elements?.get(0)?.distance
+                duration = res.data?.rows?.get(0)?.elements?.get(0)?.duration
+            }
+        }
+    }
+
+
+    private fun cleanMap() {
+        polyline?.remove()
+        routePoints?.clear()
+        handler?.removeCallbacks(runnable)
+        handler = null
+        routePoints = null
+        distance = null
+        duration = null
+    }
+
+    var handler:Handler? = Handler(Looper.getMainLooper())
+    val runnable = object : Runnable {
+        override fun run() {
+            getDistanceMatrix(locationViewModel.location.value!!, riderPickUpLocation!!)
+        }
+    }
+
+    private fun registerDistanceHandler(){
+        handler?.postDelayed(runnable,60000)
+    }
 }

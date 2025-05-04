@@ -2,7 +2,6 @@ package com.example.uberdriver.presentation.driver.map.ui
 
 import android.content.Context
 import android.location.Location
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +16,7 @@ import com.example.uberdriver.presentation.driver.map.viewmodel.DriverViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.LocationViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.MapAndCardSharedViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.RideViewModel
+import com.example.uberdriver.presentation.driver.map.viewmodel.TripViewModel
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import java.util.Locale
@@ -26,6 +26,7 @@ class RideRequestCardService(
     private val binding: WeakReference<FragmentMapBinding>,
     private val viewLifecycleOwner: LifecycleOwner,
     private val rideViewModel: RideViewModel,
+    private val tripViewModel: TripViewModel,
     private val context: Context,
     private val mapAndCardSharedModel: MapAndCardSharedViewModel,
     private val driverViewModel: DriverViewModel
@@ -108,11 +109,9 @@ class RideRequestCardService(
     }
 
 
-    private fun acceptRide() {
+    private suspend fun acceptRide() {
         rideViewModel.rideRequests.value?.let { ride ->
             locationViewModel.location.value?.let { loc ->
-                Log.d("RideRequest",ride.toString())
-                Log.d("RideRequest",loc.toString())
                 rideViewModel.acceptRideRequest(
                     AcceptRideRequest(
                         ride.rideId,
@@ -122,6 +121,16 @@ class RideRequestCardService(
                         ride.riderId
                     )
                 )
+                tripViewModel.setRide(
+                    AcceptRideRequest(
+                        ride.rideId,
+                        driverViewModel.driverId!!,
+                        loc.latitude,
+                        loc.longitude,
+                        ride.riderId
+                    )
+                )
+
             }
         }
     }

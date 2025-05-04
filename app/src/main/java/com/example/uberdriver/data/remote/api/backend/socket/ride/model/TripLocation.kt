@@ -7,5 +7,7 @@ data class TripLocation(
     val driverId: UUID,
     val riderId: UUID,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val time:Int,
+    val distance:Int
 )
