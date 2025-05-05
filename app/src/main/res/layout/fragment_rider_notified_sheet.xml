@@ -11,9 +11,54 @@
     android:background="@android:color/transparent"
     app:cardElevation="8dp"
     app:contentPadding="@dimen/_10sdp"
-
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     app:cardCornerRadius="@dimen/_5sdp"
     >
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/mc_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_gravity="bottom"
+        android:background="@android:color/transparent"
+        app:cardElevation="8dp"
+        app:shapeAppearanceOverlay="@style/TopRoundedCorners">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/_70sdp"
+                android:layout_height="@dimen/_5sdp"
+                android:layout_gravity="center_horizontal"
+                android:backgroundTint="@color/grey" />
+
+            <TextView
+                android:id="@+id/tv_offline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/_7sdp"
+                android:text="You're offline"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_18ssp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/linear_line"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_3sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@color/black" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -59,7 +104,6 @@
                 android:id="@+id/mb_back"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
                 android:layout_width="48dp"
-                app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
                 android:layout_height="48dp"
                 android:backgroundTint="@color/lavender_gray"
                 android:insetLeft="0dp"

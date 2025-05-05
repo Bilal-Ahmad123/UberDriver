@@ -276,24 +276,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun onGoButtonClickListener() {
         binding?.goButton?.setOnClickListener {
             isGoButtonClicked = true
-            binding?.tvOffline?.text = "Going Online"
-            ButtonAnimator.startHorizontalAnimation(
-                binding!!.linearLine,
-                requireContext()
-            )
             binding?.frameLayout?.visibility = View.GONE
-            hideLineView()
+            viewLifecycleOwner.lifecycleScope.launch {
+                mapAndCardSharedViewModel.setGoBtnClicked(true)
+            }
         }
     }
 
-    private fun hideLineView() {
-        lifecycleScope.launch {
-            delay(2000)
-            binding?.tvOffline?.text = "You are Online"
-            ButtonAnimator.stopAnimation()
-            binding?.linearLine?.visibility = View.GONE
-        }
-    }
+
 
     private fun connectToSocket() {
         socketViewModel.connectSocket(Constants_Api.LOCATION_SOCKET_API + "?riderId=${driverViewModel.driverId}")

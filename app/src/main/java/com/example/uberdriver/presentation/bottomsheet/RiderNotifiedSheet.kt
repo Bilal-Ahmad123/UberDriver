@@ -9,10 +9,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.uberdriver.R
+import com.example.uberdriver.core.common.ButtonAnimator
 import com.example.uberdriver.databinding.FragmentRiderNotifiedSheetBinding
 import com.example.uberdriver.presentation.driver.map.viewmodel.MapAndCardSharedViewModel
+import com.example.uberdriver.presentation.driver.map.viewmodel.TripViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class RiderNotifiedSheet : Fragment(R.layout.fragment_rider_notified_sheet) {
 
@@ -20,7 +26,7 @@ class RiderNotifiedSheet : Fragment(R.layout.fragment_rider_notified_sheet) {
     private var bottomSheetBehavior: BottomSheetBehavior<View>? = null
     private var binding: FragmentRiderNotifiedSheetBinding? = null
     private val mapAndCardSharedViewModel: MapAndCardSharedViewModel by activityViewModels<MapAndCardSharedViewModel>()
-
+    private val tripViewModel :TripViewModel by activityViewModels<TripViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -33,10 +39,40 @@ class RiderNotifiedSheet : Fragment(R.layout.fragment_rider_notified_sheet) {
         return binding?.root
     }
 
+
+
+    private fun animateLineAndChangeText() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapAndCardSharedViewModel.goBtnClicked.collectLatest {
+                if (it) {
+                    binding?.tvOffline?.text = "Going Online"
+                    ButtonAnimator.startHorizontalAnimation(
+                        binding!!.linearLine,
+                        requireContext()
+                    )
+                    hideLineView()
+                }
+            }
+        }
+    }
+
+    private fun hideLineView() {
+        lifecycleScope.launch {
+            delay(2000)
+            withContext(Dispatchers.Main) {
+                binding?.tvOffline?.text = "You are Online"
+                ButtonAnimator.stopAnimation()
+                binding?.linearLine?.visibility = View.GONE
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setBottomSheetStyle()
         observeStartRideBtnClickListener()
+        animateLineAndChangeText()
+        driverReachedPickUpSpot()
     }
 
     private fun setBottomSheetStyle() {
@@ -49,13 +85,24 @@ class RiderNotifiedSheet : Fragment(R.layout.fragment_rider_notified_sheet) {
             (requireContext().resources.displayMetrics.heightPixels * 0.32).toInt()
         bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
         bottomSheetBehavior?.isHideable = false
-        bottomSheetBehavior?.isDraggable = true
+        bottomSheetBehavior?.isDraggable = false
     }
 
     private fun observeStartRideBtnClickListener() {
         binding?.startRide?.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 mapAndCardSharedViewModel.setStartRideBtnClicked(true)
+            }
+        }
+    }
+
+    private fun driverReachedPickUpSpot(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapAndCardSharedViewModel.reachPickUpLocation.collectLatest {
+                if(it){
+                    bottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
+                    bottomSheetBehavior?.isDraggable = true
+                }
             }
         }
     }
