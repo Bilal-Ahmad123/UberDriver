@@ -82,7 +82,7 @@ class RiderNotifiedSheet : Fragment(R.layout.fragment_rider_notified_sheet) {
         bottomSheet?.layoutParams?.height =
             (requireContext().resources.displayMetrics.heightPixels * 0.70).toInt()
         bottomSheetBehavior?.peekHeight =
-            (requireContext().resources.displayMetrics.heightPixels * 0.32).toInt()
+            (requireContext().resources.displayMetrics.heightPixels * 0.10).toInt()
         bottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
         bottomSheetBehavior?.isHideable = false
         bottomSheetBehavior?.isDraggable = false
