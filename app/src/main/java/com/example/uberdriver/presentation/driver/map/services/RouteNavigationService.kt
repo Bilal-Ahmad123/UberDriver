@@ -183,7 +183,6 @@ class RouteNavigationService(
 
     private fun driverReachedToLocation(value: LatLng) {
         routePoints?.let {
-            if (it.size <= 2) {
                 driverViewModel?.driverId?.let { a ->
                     cleanMap()
                     tripViewModel.ride.value?.let {trip->
@@ -198,7 +197,6 @@ class RouteNavigationService(
                     }
                 }
             }
-        }
     }
 
     private fun getDistanceMatrix(destination: LatLng, origin: LatLng) {
