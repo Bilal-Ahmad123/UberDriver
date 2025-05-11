@@ -41,6 +41,8 @@ class RiderNotifiedSheet : Fragment(R.layout.fragment_rider_notified_sheet) {
 
 
 
+
+
     private fun animateLineAndChangeText() {
         viewLifecycleOwner.lifecycleScope.launch {
             mapAndCardSharedViewModel.goBtnClicked.collectLatest {
@@ -107,4 +109,9 @@ class RiderNotifiedSheet : Fragment(R.layout.fragment_rider_notified_sheet) {
         }
     }
 
+    private fun startUberRideBtnClickListener(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapAndCardSharedViewModel.setStartRideBtnClicked(true)
+        }
+    }
 }

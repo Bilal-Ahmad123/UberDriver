@@ -21,6 +21,30 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/navigate"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+        android:layout_width="@dimen/_150sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:backgroundTint="@color/black"
+        android:insetLeft="0dp"
+        app:cornerRadius="@dimen/_20sdp"
+        android:insetTop="0dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        app:iconPadding="@dimen/_6sdp"
+        app:icon="@drawable/baseline_navigation_24"
+        app:iconTint="@color/white"
+        app:iconSize="@dimen/_30sdp"
+        android:text="Navigate"
+        android:layout_marginBottom="@dimen/_200sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_12ssp"
+        />
+
+
 
     <FrameLayout
         android:id="@+id/frameLayout"

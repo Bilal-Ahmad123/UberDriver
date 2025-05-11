@@ -148,7 +148,7 @@ class RouteNavigationService(
     private fun sendTripLocationUpdates(value: LatLng) {
         viewLifecycleOwner.lifecycleScope.launch {
             if (distance != null && duration != null) {
-                tripViewModel.ride.value?.let {ri->
+                tripViewModel.ride.value?.let { ri ->
                     tripViewModel.sendTripLocation(
                         TripLocation(
                             ri.rideId,
@@ -183,20 +183,23 @@ class RouteNavigationService(
 
     private fun driverReachedToLocation(value: LatLng) {
         routePoints?.let {
-                driverViewModel?.driverId?.let { a ->
-                    cleanMap()
-                    tripViewModel.ride.value?.let {trip->
-                        tripViewModel.reachedRiderPickUpSpot(
-                            ReachedRider(
-                                trip.riderId,
-                                a,
-                                trip.rideId,
-                                true,
-                            )
+            driverViewModel?.driverId?.let { a ->
+                cleanMap()
+                tripViewModel.ride.value?.let { trip ->
+                    tripViewModel.reachedRiderPickUpSpot(
+                        ReachedRider(
+                            trip.riderId,
+                            a,
+                            trip.rideId,
+                            true,
                         )
+                    )
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        mapAndCardSharedViewModel.setPickUpLocationReached(true)
                     }
                 }
             }
+        }
     }
 
     private fun getDistanceMatrix(destination: LatLng, origin: LatLng) {
@@ -208,14 +211,14 @@ class RouteNavigationService(
     private fun observeDistanceMatrixResponse() {
         viewLifecycleOwner.lifecycleScope.launch {
             googleViewModel.distanceMatrix.value?.let { res ->
-                distance =res.data?.rows?.get(0)?.elements?.get(0)?.distance
+                distance = res.data?.rows?.get(0)?.elements?.get(0)?.distance
                 duration = res.data?.rows?.get(0)?.elements?.get(0)?.duration
             }
         }
     }
 
 
-    private fun cleanMap() {
+    fun cleanMap() {
         polyline?.remove()
         routePoints?.clear()
         handler?.removeCallbacks(runnable)
@@ -225,14 +228,14 @@ class RouteNavigationService(
         duration = null
     }
 
-    var handler:Handler? = Handler(Looper.getMainLooper())
+    var handler: Handler? = Handler(Looper.getMainLooper())
     val runnable = object : Runnable {
         override fun run() {
             getDistanceMatrix(locationViewModel.location.value!!, location!!)
         }
     }
 
-    private fun registerDistanceHandler(){
-        handler?.postDelayed(runnable,10000)
+    private fun registerDistanceHandler() {
+        handler?.postDelayed(runnable, 10000)
     }
 }

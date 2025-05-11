@@ -1,5 +1,6 @@
 package com.example.uberdriver.presentation.driver.map.viewmodel
 
+import android.util.Log
 import com.example.uberdriver.core.common.BaseViewModel
 import com.example.uberdriver.core.dispatcher.IDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,8 +18,8 @@ class MapAndCardSharedViewModel @Inject constructor(dispatcher:IDispatchers):Bas
     private val startRideBtnClicked = MutableSharedFlow<Boolean>()
     val startRideClick get() = startRideBtnClicked.asSharedFlow()
 
-    private val reachedPickUpLocation = MutableStateFlow<Boolean>(false)
-    val reachPickUpLocation get() = reachedPickUpLocation.asStateFlow()
+    private val reachedPickUpLocation = MutableSharedFlow<Boolean>()
+    val reachPickUpLocation get() = reachedPickUpLocation.asSharedFlow()
 
     private val reachedDropOffLocation = MutableStateFlow<Boolean>(false)
     val reachDropOffLocation get() = reachedDropOffLocation.asStateFlow()
@@ -26,8 +27,9 @@ class MapAndCardSharedViewModel @Inject constructor(dispatcher:IDispatchers):Bas
     private val _goBtnClicked = MutableSharedFlow<Boolean>()
     val goBtnClicked get() = _goBtnClicked.asSharedFlow()
 
-    private val _reachedRider = MutableSharedFlow<Boolean>()
-    val reachedRider = _reachedRider.asSharedFlow()
+
+    private val _startUberBtnClicked = MutableSharedFlow<Boolean>()
+    val startUberBtnClicked get() = _startUberBtnClicked.asSharedFlow()
 
     suspend fun setRideBtnClicked(value: Boolean) {
         acceptRideBtnClicked.emit(value)
@@ -47,5 +49,9 @@ class MapAndCardSharedViewModel @Inject constructor(dispatcher:IDispatchers):Bas
 
     suspend fun setGoBtnClicked(value:Boolean){
         _goBtnClicked.emit(value)
+    }
+
+    suspend fun startUberBtnClicked(value:Boolean){
+        _startUberBtnClicked.emit(value)
     }
 }

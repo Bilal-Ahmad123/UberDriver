@@ -1,6 +1,10 @@
 package com.example.uberdriver.presentation.driver
 
+import android.app.PictureInPictureParams
+import android.graphics.Point
 import android.os.Bundle
+import android.util.Rational
+import android.view.Display
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity

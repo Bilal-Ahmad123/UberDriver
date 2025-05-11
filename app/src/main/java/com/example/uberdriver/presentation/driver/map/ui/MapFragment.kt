@@ -1,8 +1,11 @@
 package com.example.uberdriver.presentation.driver.map.ui
 
 import android.Manifest
+import android.content.Intent
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,11 +21,10 @@ import com.example.uberdriver.core.common.FetchLocation
 import com.example.uberdriver.core.common.HRMarkerAnimation
 import com.example.uberdriver.core.common.Helper
 import com.example.uberdriver.core.common.PermissionManagers
-import com.example.uberdriver.data.remote.api.backend.socket.ride.model.NearbyRideRequests
-import com.example.uberdriver.data.remote.api.backend.socket.ride.model.TripLocation
 import com.example.uberdriver.databinding.FragmentMapBinding
 import com.example.uberdriver.domain.remote.socket.location.model.UpdateLocation
 import com.example.uberdriver.presentation.auth.register.viewmodels.VehicleViewModel
+import com.example.uberdriver.presentation.driver.MainActivity
 import com.example.uberdriver.presentation.driver.map.services.RouteNavigationService
 import com.example.uberdriver.presentation.driver.map.utilities.RouteCreationHelper
 import com.example.uberdriver.presentation.driver.map.viewmodel.DriverViewModel
@@ -42,7 +44,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.maps.android.SphericalUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -67,7 +68,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val vehicleViewModel: VehicleViewModel by activityViewModels<VehicleViewModel>()
     private val googleViewModel: GoogleViewModel by viewModels<GoogleViewModel>()
     private val mapAndCardSharedViewModel: MapAndCardSharedViewModel by activityViewModels<MapAndCardSharedViewModel>()
-    private val tripViewModel:TripViewModel by viewModels<TripViewModel>()
+    private val tripViewModel: TripViewModel by viewModels<TripViewModel>()
     private var isGoButtonClicked: Boolean = false
     private var rideRequestCardService: RideRequestCardService? = null
     private var routeCreationHelper: RouteCreationHelper? = null
@@ -95,10 +96,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         connectToSocket()
         fetchContinuousLocation()
         initializeCardService()
+        addObservers()
+        navigateBtnClickListener()
+        showPictureInPicture()
+    }
+
+    private fun addObservers() {
         observeRideRequests()
         observeAcceptRideBtnClicked()
         observeRideBtnClicked()
         observePickUpLocationReached()
+        observeStartRideBtnClicked()
     }
 
     private fun initializeCardService() {
@@ -284,7 +292,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
 
-
     private fun connectToSocket() {
         socketViewModel.connectSocket(Constants_Api.LOCATION_SOCKET_API + "?riderId=${driverViewModel.driverId}")
         socketViewModel.observeConnectedToSocket()
@@ -350,10 +357,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private var tripJob:Job? = null
+    private var tripJob: Job? = null
 
 
-    private fun cancelTripUpdates(){
+    private fun cancelTripUpdates() {
         tripJob?.cancel(null)
     }
 
@@ -371,11 +378,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 startRideClick.collectLatest {
                     if (it) {
                         rideViewModel.rideRequests.value?.let { a ->
-                            routeNavigationService?.createRoute(LatLng(a.dropOffLatitude,a.dropOffLongitude))
+                            routeNavigationService?.createRoute(
+                                LatLng(
+                                    a.dropOffLatitude,
+                                    a.dropOffLongitude
+                                )
+                            )
                             rideViewModel.rideRequests.emit(null)
-                            mapAndCardSharedViewModel.apply {
-                                setPickUpLocationReached(false)
-                            }
                         }
                     }
                 }
@@ -388,12 +397,61 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             mapAndCardSharedViewModel.apply {
                 reachPickUpLocation.collectLatest {
                     if (it) {
-                        mapAndCardSharedViewModel.setPickUpLocationReached(false)
                         binding?.bottomSheet?.visibility = View.VISIBLE
                     }
                 }
             }
         }
     }
+
+    private fun observeStartRideBtnClicked() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapAndCardSharedViewModel.apply {
+                startUberBtnClicked.collectLatest {
+                    rideViewModel.rideRequests.value?.let { a ->
+                        routeNavigationService?.cleanMap()
+                        routeNavigationService?.createRoute(
+                            LatLng(
+                                a.dropOffLatitude,
+                                a.dropOffLongitude
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun navigateBtnClickListener() {
+        binding?.navigate?.setOnClickListener {
+            rideViewModel.rideRequests.value?.let { a ->
+                launchGoogleMap(LatLng(a.pickupLatitude, a.pickupLongitude))
+            }
+        }
+    }
+
+    private fun launchGoogleMap(destination: LatLng) {
+        val gmmIntentUri =
+            Uri.parse("google.navigation:q=${destination.latitude},${destination.longitude}" + "&mode=d")
+        val intent = Intent(Intent.ACTION_VIEW, gmmIntentUri).apply {
+            setPackage("com.google.android.apps.maps")
+        }
+        startActivity(intent)
+    }
+
+    private fun showPictureInPicture() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapAndCardSharedViewModel.reachPickUpLocation.collectLatest {
+                val dialogIntent: Intent = Intent(
+                    requireContext(),
+                    MainActivity::class.java
+                )
+                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(dialogIntent)
+                Log.d("PictureInPicture","PictureInPicture")
+            }
+        }
+    }
+
 
 }
