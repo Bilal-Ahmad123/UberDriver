@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <application
         android:name=".app.UberDriverApp"
         android:allowBackup="true"
@@ -16,6 +17,11 @@
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.UberDriver"
         tools:targetApi="31">
+        <service
+            android:name=".presentation.driver.map.services.AppLaunchService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
         <activity
             android:name=".presentation.auth.AuthActivity"
             android:windowSoftInputMode="adjustResize"
@@ -33,7 +39,12 @@
         <activity
             android:name=".presentation.driver.MainActivity"
             android:windowSoftInputMode="adjustResize"
-            android:exported="false"/>
+            android:exported="false">
+            <intent-filter>
+                <action android:name="intent.my.action" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />

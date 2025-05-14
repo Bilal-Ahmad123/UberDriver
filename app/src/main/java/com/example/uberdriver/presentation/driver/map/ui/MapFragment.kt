@@ -1,17 +1,21 @@
 package com.example.uberdriver.presentation.driver.map.ui
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Intent
 import android.location.Location
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.example.uberdriver.R
 import com.example.uberdriver.core.common.BitmapCreator
@@ -21,6 +25,8 @@ import com.example.uberdriver.core.common.FetchLocation
 import com.example.uberdriver.core.common.HRMarkerAnimation
 import com.example.uberdriver.core.common.Helper
 import com.example.uberdriver.core.common.PermissionManagers
+import com.example.uberdriver.core.services.BackgroundLocationService
+import com.example.uberdriver.core.services.LocationService
 import com.example.uberdriver.databinding.FragmentMapBinding
 import com.example.uberdriver.domain.remote.socket.location.model.UpdateLocation
 import com.example.uberdriver.presentation.auth.register.viewmodels.VehicleViewModel
@@ -198,9 +204,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun fetchContinuousLocation() {
         checkLocationPermission {
             viewLifecycleOwner.lifecycleScope.launch {
+                Intent(requireContext(), BackgroundLocationService::class.java).apply {
+                    action = BackgroundLocationService.ACTION_START
+                    requireContext().startForegroundService(this)
+                }
                 FetchLocation.getLocationUpdates(requireContext()).collect {
                     locationViewModel.setDriverLocation(LatLng(it.latitude, it.longitude))
                     animateCameraToCurrentLocation(it)
@@ -222,6 +233,13 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
                 }
             }
+        }
+    }
+
+    private fun fetchLocationInBackground(){
+        Intent(requireContext(), LocationService::class.java).apply {
+            action = LocationService.ACTION_START
+            requireContext().startService(this)
         }
     }
 
@@ -442,12 +460,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun showPictureInPicture() {
         viewLifecycleOwner.lifecycleScope.launch {
             mapAndCardSharedViewModel.reachPickUpLocation.collectLatest {
-                val dialogIntent: Intent = Intent(
-                    requireContext(),
-                    MainActivity::class.java
+                val it = Intent("intent.my.action")
+                it.setComponent(
+                    ComponentName(
+                        requireContext().packageName,
+                        MainActivity::class.java.getName()
+                    )
                 )
-                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(dialogIntent)
+                it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                requireContext().applicationContext.startActivity(it)
                 Log.d("PictureInPicture","PictureInPicture")
             }
         }
