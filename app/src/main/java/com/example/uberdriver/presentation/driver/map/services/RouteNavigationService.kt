@@ -210,9 +210,14 @@ class RouteNavigationService(
 
     private fun observeDistanceMatrixResponse() {
         viewLifecycleOwner.lifecycleScope.launch {
-            googleViewModel.distanceMatrix.value?.let { res ->
-                distance = res.data?.rows?.get(0)?.elements?.get(0)?.distance
-                duration = res.data?.rows?.get(0)?.elements?.get(0)?.duration
+            googleViewModel.distanceMatrix.collectLatest { res ->
+                res?.data?.let {
+                    if(it.rows.isNotEmpty()){
+                        distance =it?.rows?.get(0)?.elements?.get(0)?.distance
+                        duration = it.rows?.get(0)?.elements?.get(0)?.duration
+                    }
+                }
+
             }
         }
     }

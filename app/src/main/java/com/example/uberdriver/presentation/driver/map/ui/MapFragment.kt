@@ -1,10 +1,10 @@
 package com.example.uberdriver.presentation.driver.map.ui
 
 import android.Manifest
-import android.content.ComponentName
 import android.content.Intent
 import android.location.Location
 import android.net.Uri
+import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +15,6 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.example.uberdriver.R
 import com.example.uberdriver.core.common.BitmapCreator
@@ -25,12 +24,11 @@ import com.example.uberdriver.core.common.FetchLocation
 import com.example.uberdriver.core.common.HRMarkerAnimation
 import com.example.uberdriver.core.common.Helper
 import com.example.uberdriver.core.common.PermissionManagers
-import com.example.uberdriver.core.services.BackgroundLocationService
-import com.example.uberdriver.core.services.LocationService
+import com.example.uberdriver.core.services.LocationTrackerService
 import com.example.uberdriver.databinding.FragmentMapBinding
 import com.example.uberdriver.domain.remote.socket.location.model.UpdateLocation
 import com.example.uberdriver.presentation.auth.register.viewmodels.VehicleViewModel
-import com.example.uberdriver.presentation.driver.MainActivity
+import com.example.uberdriver.presentation.driver.map.services.AppLaunchService
 import com.example.uberdriver.presentation.driver.map.services.RouteNavigationService
 import com.example.uberdriver.presentation.driver.map.utilities.RouteCreationHelper
 import com.example.uberdriver.presentation.driver.map.viewmodel.DriverViewModel
@@ -79,7 +77,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var rideRequestCardService: RideRequestCardService? = null
     private var routeCreationHelper: RouteCreationHelper? = null
     private var routeNavigationService: RouteNavigationService? = null
-
+    private var locationManager: com.example.uberdriver.core.services.LocationManager? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -104,7 +102,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         initializeCardService()
         addObservers()
         navigateBtnClickListener()
-        showPictureInPicture()
+        locationManager = com.example.uberdriver.core.services.LocationManager(requireContext())
     }
 
     private fun addObservers() {
@@ -208,10 +206,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun fetchContinuousLocation() {
         checkLocationPermission {
             viewLifecycleOwner.lifecycleScope.launch {
-                Intent(requireContext(), BackgroundLocationService::class.java).apply {
-                    action = BackgroundLocationService.ACTION_START
-                    requireContext().startForegroundService(this)
-                }
                 FetchLocation.getLocationUpdates(requireContext()).collect {
                     locationViewModel.setDriverLocation(LatLng(it.latitude, it.longitude))
                     animateCameraToCurrentLocation(it)
@@ -236,12 +230,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    private fun fetchLocationInBackground(){
-        Intent(requireContext(), LocationService::class.java).apply {
-            action = LocationService.ACTION_START
-            requireContext().startService(this)
-        }
-    }
 
     private fun animateCameraToCurrentLocation(lastKnownLocation: Location?) {
         if (googleMap != null) {
@@ -301,11 +289,31 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun onGoButtonClickListener() {
         binding?.goButton?.setOnClickListener {
+            startLocationService()
             isGoButtonClicked = true
             binding?.frameLayout?.visibility = View.GONE
             viewLifecycleOwner.lifecycleScope.launch {
                 mapAndCardSharedViewModel.setGoBtnClicked(true)
             }
+
+        }
+    }
+
+    private fun startLocationService() {
+        Intent(
+            requireContext(), LocationTrackerService::class.java
+        ).also {
+            it.action = LocationTrackerService.Action.START.name
+            requireContext().startService(it)
+        }
+    }
+
+    private fun stopLocationService() {
+        Intent(
+            requireContext(), LocationTrackerService::class.java
+        ).also {
+            it.action = LocationTrackerService.Action.STOP.name
+            requireContext().startService(it)
         }
     }
 
@@ -320,6 +328,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             viewLifecycleOwner.lifecycleScope.launch {
                 rideRequests.collectLatest { it ->
                     it?.let {
+                        Log.d("RideRequest",it.toString())
                         rideRequestCardService?.showCard(it)
                         locationViewModel.location.value?.let { loc ->
                             routeCreationHelper?.createRoute(
@@ -457,22 +466,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         startActivity(intent)
     }
 
-    private fun showPictureInPicture() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            mapAndCardSharedViewModel.reachPickUpLocation.collectLatest {
-                val it = Intent("intent.my.action")
-                it.setComponent(
-                    ComponentName(
-                        requireContext().packageName,
-                        MainActivity::class.java.getName()
-                    )
-                )
-                it.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                requireContext().applicationContext.startActivity(it)
-                Log.d("PictureInPicture","PictureInPicture")
-            }
-        }
-    }
+
+
 
 
 }
