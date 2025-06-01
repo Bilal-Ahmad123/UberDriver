@@ -1,4 +1,4 @@
-package com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.request
+package com.example.uberdriver.data.remote.api.backend.vehicle.model.request
 
 import java.util.UUID
 

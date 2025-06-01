@@ -1,4 +1,4 @@
-package com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.response
+package com.example.uberdriver.data.remote.api.backend.vehicle.model.response
 
 import com.google.gson.annotations.SerializedName
 import java.util.UUID

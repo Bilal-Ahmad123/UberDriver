@@ -1,7 +1,7 @@
 package com.example.uberdriver.di.network
 
 import com.example.uberdriver.core.common.Constants_Api
-import com.example.uberdriver.data.remote.api.backend.driver.vehicle.api.VehicleService
+import com.example.uberdriver.data.remote.api.backend.vehicle.api.VehicleService
 import com.example.uberdriver.domain.remote.vehicle.repository.VehicleRepository
 import dagger.Module
 import dagger.Provides
@@ -24,7 +24,7 @@ class VehicleModule {
 
     @Provides
     @Singleton
-    fun VehicleRepositoryImpl(api:VehicleService): com.example.uberdriver.data.remote.api.backend.driver.vehicle.repository.VehicleRepository {
+    fun VehicleRepositoryImpl(api: VehicleService): com.example.uberdriver.data.remote.api.backend.vehicle.repository.VehicleRepository {
         return VehicleRepository(api)
     }
 }

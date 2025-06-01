@@ -1,6 +1,6 @@
-package com.example.uberdriver.data.remote.api.backend.driver.vehicle.mappers
+package com.example.uberdriver.data.remote.api.backend.vehicle.mappers
 
-import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.response.GetVehicleDetailsResponse
+import com.example.uberdriver.data.remote.api.backend.vehicle.model.response.GetVehicleDetailsResponse
 import com.example.uberdriver.domain.remote.vehicle.model.response.VehicleDetails
 
 fun GetVehicleDetailsResponse.toDomain():VehicleDetails{

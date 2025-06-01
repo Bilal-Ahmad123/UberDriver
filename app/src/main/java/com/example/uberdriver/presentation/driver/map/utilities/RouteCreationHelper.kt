@@ -196,6 +196,9 @@ class RouteCreationHelper(
                             100
                         )
                     )
+                    googleMap.get()?.cameraPosition?.zoom?.let {zoom->
+                        googleViewModel.setCameraZoomLevel(zoom)
+                    }
                 }
             }
         }

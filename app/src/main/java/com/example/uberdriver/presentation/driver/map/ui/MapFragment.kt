@@ -111,6 +111,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         observeRideBtnClicked()
         observePickUpLocationReached()
         observeStartRideBtnClicked()
+        observeRideStarted()
     }
 
     private fun initializeCardService() {
@@ -208,8 +209,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             viewLifecycleOwner.lifecycleScope.launch {
                 FetchLocation.getLocationUpdates(requireContext()).collect {
                     locationViewModel.setDriverLocation(LatLng(it.latitude, it.longitude))
-                    animateCameraToCurrentLocation(it)
-                    updateLocation(it)
+                    if(mapAndCardSharedViewModel.showingRideRequestCard.value)
+                        updateLocation(it,false)
+                    else
+                        updateLocation(it)
                     driverRoomViewModel.driver.value.let { dri ->
                         with(socketViewModel) {
                             if (socketConnected.value && isGoButtonClicked) {
@@ -235,27 +238,28 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         if (googleMap != null) {
             val userLatLng = lastKnownLocation?.let { LatLng(it.latitude, it.longitude) }
             viewLifecycleOwner.lifecycleScope.launch {
-                googleViewModel.cameraZoomLevel.collectLatest {
+                googleViewModel.cameraZoomLevel.value?.let {
                     googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(userLatLng!!, it))
                 }
             }
         }
     }
 
-    private fun animateMarker() {
+    private fun animateMarker(value:Boolean = true) {
         HRMarkerAnimation(
             googleMap, 1000
         ) { updatedLocation -> oldLocation = updatedLocation }.animateMarker(
             mLastLocation,
             oldLocation,
-            driverMarker
+            driverMarker,
+            value
         )
     }
 
-    private fun updateLocation(newLocation: Location?) {
+    private fun updateLocation(newLocation: Location?, animateCameraPos:Boolean = true) {
         if (newLocation != null) {
             mLastLocation = newLocation
-            animateMarker()
+            animateMarker(animateCameraPos)
         }
     }
 
@@ -328,7 +332,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             viewLifecycleOwner.lifecycleScope.launch {
                 rideRequests.collectLatest { it ->
                     it?.let {
-                        Log.d("RideRequest",it.toString())
                         rideRequestCardService?.showCard(it)
                         locationViewModel.location.value?.let { loc ->
                             routeCreationHelper?.createRoute(
@@ -358,6 +361,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun hideCardAndRoute() {
         job = viewLifecycleOwner.lifecycleScope.launch {
             delay(10000)
+            mapAndCardSharedViewModel.setShowingRideRequests(false)
             rideRequestCardService?.hideCardAndShowSheet()
             routeCreationHelper?.deleteEverythingOnMap()
             rideViewModel.rideRequests.emit(null)
@@ -396,6 +400,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         routeCreationHelper?.deleteEverythingOnMap()
         rideRequestCardService?.hideCard()
         job?.cancel(null)
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapAndCardSharedViewModel.setShowingRideRequests(false)
+        }
     }
 
 
@@ -452,7 +459,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun navigateBtnClickListener() {
         binding?.navigate?.setOnClickListener {
             rideViewModel.rideRequests.value?.let { a ->
-                launchGoogleMap(LatLng(a.pickupLatitude, a.pickupLongitude))
+                if (tripViewModel.tripStatus.first) {
+                    launchGoogleMap(LatLng(a.pickupLatitude, a.pickupLongitude))
+                } else if (tripViewModel.tripStatus.second) {
+                    launchGoogleMap(LatLng(a.dropOffLatitude, a.dropOffLongitude))
+                }
             }
         }
     }
@@ -466,8 +477,17 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         startActivity(intent)
     }
 
+    private fun observeRideStarted() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            rideViewModel.rideStarted.collectLatest { t ->
+                toggleNavigateButton(t)
+            }
+        }
+    }
 
-
+    private fun toggleNavigateButton(value: Boolean) {
+        binding?.navigate?.visibility = if (value) View.VISIBLE else View.GONE
+    }
 
 
 }

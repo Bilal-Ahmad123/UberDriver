@@ -15,7 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.uberdriver.R
-import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.request.CreateVehicleRequest
+import com.example.uberdriver.data.remote.api.backend.vehicle.model.request.CreateVehicleRequest
 import com.example.uberdriver.databinding.FragmentVehicleRegisterBinding
 import com.example.uberdriver.presentation.auth.inputlayoutadapter.TextInputLayoutAdapter
 import com.example.uberdriver.presentation.auth.register.viewmodels.RegisterViewModel

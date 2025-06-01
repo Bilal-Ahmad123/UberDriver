@@ -1,6 +1,6 @@
-package com.example.uberdriver.data.remote.api.backend.driver.vehicle.repository
+package com.example.uberdriver.data.remote.api.backend.vehicle.repository
 
-import com.example.uberdriver.data.remote.api.backend.driver.vehicle.model.request.CreateVehicleRequest
+import com.example.uberdriver.data.remote.api.backend.vehicle.model.request.CreateVehicleRequest
 import com.example.uberdriver.domain.remote.vehicle.model.response.CheckVehicleExists
 import com.example.uberdriver.domain.remote.vehicle.model.response.CreateVehicle
 import com.example.uberdriver.domain.remote.vehicle.model.response.VehicleDetails

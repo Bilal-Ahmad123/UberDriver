@@ -23,6 +23,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/navigate"
+        android:visibility="gone"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
         android:layout_width="@dimen/_150sdp"
         android:layout_height="@dimen/_40sdp"

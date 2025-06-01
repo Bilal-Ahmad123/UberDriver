@@ -1,6 +1,5 @@
 package com.example.uberdriver.presentation.driver.map.viewmodel
 
-import android.util.Log
 import com.example.uberdriver.core.common.BaseViewModel
 import com.example.uberdriver.core.dispatcher.IDispatchers
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -11,7 +10,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class MapAndCardSharedViewModel @Inject constructor(dispatcher:IDispatchers):BaseViewModel(dispatcher){
+class MapAndCardSharedViewModel @Inject constructor(dispatcher: IDispatchers) :
+    BaseViewModel(dispatcher) {
     private val acceptRideBtnClicked = MutableSharedFlow<Boolean>()
     val acceptRideBtnClick get() = acceptRideBtnClicked.asSharedFlow()
 
@@ -27,6 +27,8 @@ class MapAndCardSharedViewModel @Inject constructor(dispatcher:IDispatchers):Bas
     private val _goBtnClicked = MutableSharedFlow<Boolean>()
     val goBtnClicked get() = _goBtnClicked.asSharedFlow()
 
+    private val _showingRideRequestCard = MutableStateFlow<Boolean>(false)
+    val showingRideRequestCard get() = _showingRideRequestCard.asStateFlow()
 
     private val _startUberBtnClicked = MutableSharedFlow<Boolean>()
     val startUberBtnClicked get() = _startUberBtnClicked.asSharedFlow()
@@ -35,23 +37,27 @@ class MapAndCardSharedViewModel @Inject constructor(dispatcher:IDispatchers):Bas
         acceptRideBtnClicked.emit(value)
     }
 
-    suspend fun setStartRideBtnClicked(value:Boolean){
+    suspend fun setStartRideBtnClicked(value: Boolean) {
         startRideBtnClicked.emit(value)
     }
 
-    suspend fun setPickUpLocationReached(value : Boolean){
+    suspend fun setPickUpLocationReached(value: Boolean) {
         reachedPickUpLocation.emit(value)
     }
 
-    suspend fun setDropOffLocationReached(value : Boolean){
+    suspend fun setDropOffLocationReached(value: Boolean) {
         reachedDropOffLocation.emit(true)
     }
 
-    suspend fun setGoBtnClicked(value:Boolean){
+    suspend fun setGoBtnClicked(value: Boolean) {
         _goBtnClicked.emit(value)
     }
 
-    suspend fun startUberBtnClicked(value:Boolean){
+    suspend fun startUberBtnClicked(value: Boolean) {
         _startUberBtnClicked.emit(value)
+    }
+
+    suspend fun setShowingRideRequests(value: Boolean) {
+        _showingRideRequestCard.emit(value)
     }
 }

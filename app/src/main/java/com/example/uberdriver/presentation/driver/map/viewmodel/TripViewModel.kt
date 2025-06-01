@@ -5,10 +5,8 @@ import com.example.uber.data.remote.api.googleMaps.models.directionsResponse.Dir
 import com.example.uberdriver.core.common.BaseViewModel
 import com.example.uberdriver.core.common.Resource
 import com.example.uberdriver.core.dispatcher.IDispatchers
-import com.example.uberdriver.data.remote.api.backend.socket.ride.model.NearbyRideRequests
 import com.example.uberdriver.data.remote.api.backend.socket.ride.model.TripLocation
 import com.example.uberdriver.data.remote.api.backend.socket.trip.model.ReachedRider
-import com.example.uberdriver.domain.remote.google.usecase.GetDirectionResponse
 import com.example.uberdriver.domain.remote.google.usecase.GetDirectionsResponseNoWaypoints
 import com.example.uberdriver.domain.remote.socket.ride.model.AcceptRideRequest
 import com.example.uberdriver.domain.remote.socket.ride.usecase.TripLocationUseCase
@@ -20,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import retrofit2.Response
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,6 +32,9 @@ class TripViewModel @Inject constructor(
 
     private val _ride = MutableStateFlow<AcceptRideRequest?>(null)
     val ride get() = _ride.asStateFlow()
+
+    private var _tripStatus:Pair<Boolean,Boolean> = Pair(false,false)
+    val tripStatus get() = _tripStatus
 
     private fun <T> handleResponse(response: Response<T>): Resource<T>? {
         if (response.isSuccessful) {
@@ -70,5 +70,9 @@ class TripViewModel @Inject constructor(
 
     suspend fun setRide(value: AcceptRideRequest){
         _ride.emit(value)
+    }
+
+    suspend fun setTripStatus(tripStatus:Pair<Boolean,Boolean>){
+        this._tripStatus= tripStatus
     }
 }

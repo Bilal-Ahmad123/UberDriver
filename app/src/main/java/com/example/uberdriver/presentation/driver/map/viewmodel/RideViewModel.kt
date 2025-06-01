@@ -4,6 +4,7 @@ import com.example.uberdriver.core.common.BaseViewModel
 import com.example.uberdriver.core.dispatcher.IDispatchers
 import com.example.uberdriver.data.remote.api.backend.socket.ride.model.NearbyRideRequests
 import com.example.uberdriver.data.remote.api.backend.socket.ride.model.TripLocation
+import com.example.uberdriver.domain.models.ride.CurrentRide
 import com.example.uberdriver.domain.remote.socket.ride.model.AcceptRideRequest
 import com.example.uberdriver.domain.remote.socket.ride.usecase.AcceptRideRequestUseCase
 import com.example.uberdriver.domain.remote.socket.ride.usecase.ObserveRideRequests
@@ -27,6 +28,12 @@ class RideViewModel @Inject constructor(
     private val _rideRequests = MutableStateFlow<NearbyRideRequests?>(null)
     val rideRequests = _rideRequests
 
+    private var _currentRide:CurrentRide? = null
+    val currentRide get() = _currentRide
+
+    private var _rideStarted= MutableStateFlow<Boolean>(false);
+    val rideStarted get() = _rideStarted
+
     fun startObservingNearbyRideRequests(){
         launchOnBack {
             startObservingNearbyRideRequestsUseCase()
@@ -45,6 +52,14 @@ class RideViewModel @Inject constructor(
         launchOnBack {
             acceptRideRequestUseCase(ride)
         }
+    }
+
+    fun setCurrentRide(ride: CurrentRide){
+        _currentRide = ride
+    }
+
+    suspend fun rideStarted(value:Boolean){
+        _rideStarted.emit(value)
     }
 
 }

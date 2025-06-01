@@ -3,8 +3,9 @@ package com.example.uberdriver.presentation.driver.map.viewmodel
 import com.example.uberdriver.core.common.BaseViewModel
 import com.example.uberdriver.core.common.Resource
 import com.example.uberdriver.core.dispatcher.IDispatchers
-import com.example.uberdriver.data.remote.api.backend.driver.details.model.DriverDetails
+import com.example.uberdriver.data.remote.api.backend.rider.model.RiderDetails
 import com.example.uberdriver.domain.remote.driver.usecase.GetDriverDetailsUseCase
+import com.example.uberdriver.domain.remote.rider.usecase.GetRiderDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,25 +14,18 @@ import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
-class DriverViewModel @Inject constructor(
-    dispatcher: IDispatchers,
-    private val getDriverDetailsUseCase: GetDriverDetailsUseCase
-) : BaseViewModel(dispatcher) {
-    private var _driverId: UUID? = null
-    val driverId get() = _driverId
+class RiderViewModel @Inject constructor(
+    private val dispatchers: IDispatchers,
+    private val getRiderDetailsUseCase: GetRiderDetails
+):BaseViewModel(dispatchers) {
+    private val riderDetails = MutableStateFlow<Resource<RiderDetails>?>(null);
+    val riderDetailsState get() = riderDetails.asStateFlow()
 
-    private var _driverDetails = MutableStateFlow<Resource<DriverDetails>?>(null)
-    val driverDetails get() = _driverDetails.asStateFlow()
-
-    fun setDriverId(driverId: UUID) {
-        _driverId = driverId
-    }
-
-    fun getDriverDetails() {
+    fun getRiderDetails(riderId: UUID){
         launchOnBack {
-            _driverDetails.emit(Resource.Loading())
-            val result = getDriverDetailsUseCase(driverId!!)
-            _driverDetails.emit(handleResponse(result))
+            riderDetails.emit(Resource.Loading())
+            val response = getRiderDetailsUseCase(riderId)
+            riderDetails.emit(handleResponse(response))
         }
     }
 
@@ -43,6 +37,4 @@ class DriverViewModel @Inject constructor(
         }
         return Resource.Error("Error ${response.code()}: ${response.message()}")
     }
-
-
 }

@@ -8,4 +8,5 @@ object Constants_Api {
     const val BACKEND_VEHICLE_API = "http://${END_POINT}:5197/"
     const val LOCATION_SOCKET_API = "ws://${END_POINT}:5231/driverhub"
     const val GOOGLE_MAPS_URL = "https://maps.googleapis.com/"
+    const val BACKEND_RIDER_API = "http://${END_POINT}:5213/"
 }

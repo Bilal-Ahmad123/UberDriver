@@ -24,7 +24,7 @@ public class HRMarkerAnimation {
         this.animationDuration = duration;
     }
 
-    public void animateMarker(final Location destination, final Location oldLocation, final Marker marker) {
+    public void animateMarker(final Location destination, final Location oldLocation, final Marker marker, Boolean animateCamera) {
         if (marker != null) {
             final LatLng startPosition = marker.getPosition();
             final LatLng endPosition = new LatLng(destination.getLatitude(), destination.getLongitude());
@@ -55,7 +55,7 @@ public class HRMarkerAnimation {
 
 
                         //when marker goes out from screen it automatically move into center
-                        if (googleMap != null) {
+                        if (googleMap != null && animateCamera) {
                             if (!Utilities.isMarkerVisible(googleMap, newPosition)) {
                                 googleMap.animateCamera(CameraUpdateFactory
                                         .newCameraPosition(new CameraPosition.Builder()

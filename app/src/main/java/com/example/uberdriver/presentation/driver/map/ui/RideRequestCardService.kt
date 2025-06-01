@@ -46,6 +46,7 @@ class RideRequestCardService(
 
     suspend fun showCard(it: NearbyRideRequests) {
         if (it != null) {
+            mapAndCardSharedModel.setShowingRideRequests(true);
             binding.get()?.cardView?.visibility = View.VISIBLE
             binding.get()?.pickupLocationName?.text =
                 getLocationName(it.pickupLatitude, it.pickupLongitude)
@@ -109,6 +110,7 @@ class RideRequestCardService(
     private suspend fun acceptRide() {
         rideViewModel.rideRequests.value?.let { ride ->
             locationViewModel.location.value?.let { loc ->
+                rideViewModel.rideStarted(true)
                 rideViewModel.acceptRideRequest(
                     AcceptRideRequest(
                         ride.rideId,
@@ -127,7 +129,7 @@ class RideRequestCardService(
                         ride.riderId
                     )
                 )
-
+                tripViewModel.setTripStatus(Pair(true,false))
             }
         }
     }
