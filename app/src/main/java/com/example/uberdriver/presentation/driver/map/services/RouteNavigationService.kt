@@ -9,6 +9,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.example.uber.data.remote.api.googleMaps.models.directionsResponse.Distance
 import com.example.uber.data.remote.api.googleMaps.models.directionsResponse.Duration
+import com.example.uberdriver.R
+import com.example.uberdriver.core.common.BitmapCreator
 import com.example.uberdriver.core.common.PolyUtilExtension
 import com.example.uberdriver.data.remote.api.backend.socket.ride.model.TripLocation
 import com.example.uberdriver.data.remote.api.backend.socket.trip.model.ReachedRider
@@ -16,10 +18,13 @@ import com.example.uberdriver.presentation.driver.map.viewmodel.DriverViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.GoogleViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.LocationViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.MapAndCardSharedViewModel
+import com.example.uberdriver.presentation.driver.map.viewmodel.RideViewModel
 import com.example.uberdriver.presentation.driver.map.viewmodel.TripViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.maps.android.PolyUtil
@@ -37,7 +42,8 @@ class RouteNavigationService(
     private val googleViewModel: GoogleViewModel,
     private val driverViewModel: DriverViewModel,
     private val viewLifecycleOwner: LifecycleOwner,
-    private val context: WeakReference<Context>
+    private val context: WeakReference<Context>,
+    private val rideViewModel: RideViewModel
 ) {
     private var polylineOptions: PolylineOptions? = null
     private var routePoints: MutableList<LatLng>? = null
@@ -45,6 +51,8 @@ class RouteNavigationService(
     private var location: LatLng? = null
     private var duration: Duration? = null
     private var distance: Distance? = null
+    private var riderMarker: Marker? = null
+    private var dropOffMarker: Marker? = null
 
     fun createRoute(
         location: LatLng,
@@ -56,6 +64,11 @@ class RouteNavigationService(
             observeLocationChanges()
             observeDistanceMatrixResponse()
             registerDistanceHandler()
+        }
+        if (tripViewModel.tripStatus.first) {
+            addRiderMarker()
+        } else if (tripViewModel.tripStatus.second) {
+            riderDropOffMarker()
         }
     }
 
@@ -212,8 +225,8 @@ class RouteNavigationService(
         viewLifecycleOwner.lifecycleScope.launch {
             googleViewModel.distanceMatrix.collectLatest { res ->
                 res?.data?.let {
-                    if(it.rows.isNotEmpty()){
-                        distance =it?.rows?.get(0)?.elements?.get(0)?.distance
+                    if (it.rows.isNotEmpty()) {
+                        distance = it?.rows?.get(0)?.elements?.get(0)?.distance
                         duration = it.rows?.get(0)?.elements?.get(0)?.duration
                     }
                 }
@@ -242,5 +255,35 @@ class RouteNavigationService(
 
     private fun registerDistanceHandler() {
         handler?.postDelayed(runnable, 10000)
+    }
+
+    private fun addRiderMarker() {
+        rideViewModel.rideRequests.value?.let {
+            riderMarker = googleMap.get()?.addMarker(
+                MarkerOptions().position(LatLng(it.pickupLatitude, it.pickupLongitude)).icon(
+                    BitmapCreator.bitmapDescriptorFromVector(
+                        R.drawable.baseline_account_circle_24,
+                        context.get()!!,
+                        0.50,
+                        0.50
+                    )
+                )
+            )
+        }
+    }
+
+    private fun riderDropOffMarker() {
+        rideViewModel.rideRequests.value?.let {
+            if (tripViewModel.tripStatus.second) {
+                dropOffMarker = googleMap.get()?.addMarker(
+                    MarkerOptions().position(LatLng(it.dropOffLatitude, it.dropOffLongitude)).icon(
+                        BitmapCreator.bitmapDescriptorFromVector(
+                            R.drawable.baseline_stop_circle_24,
+                            context.get()!!,
+                        )
+                    )
+                )
+            }
+        }
     }
 }

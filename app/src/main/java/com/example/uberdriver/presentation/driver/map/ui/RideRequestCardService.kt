@@ -100,6 +100,7 @@ class RideRequestCardService(
     private fun setRideAcceptListener() {
         binding.get()?.acceptRide?.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
+                tripViewModel.setTripStatus(Pair(true,false))
                 mapAndCardSharedModel.setRideBtnClicked(true)
                 acceptRide()
             }
@@ -129,7 +130,6 @@ class RideRequestCardService(
                         ride.riderId
                     )
                 )
-                tripViewModel.setTripStatus(Pair(true,false))
             }
         }
     }

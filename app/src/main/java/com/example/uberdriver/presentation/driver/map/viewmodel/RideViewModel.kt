@@ -54,10 +54,6 @@ class RideViewModel @Inject constructor(
         }
     }
 
-    fun setCurrentRide(ride: CurrentRide){
-        _currentRide = ride
-    }
-
     suspend fun rideStarted(value:Boolean){
         _rideStarted.emit(value)
     }

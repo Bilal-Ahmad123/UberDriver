@@ -165,7 +165,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             googleViewModel,
             driverViewModel,
             this,
-            WeakReference(context)
+            WeakReference(context),
+            rideViewModel
         )
 
 
