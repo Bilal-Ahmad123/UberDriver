@@ -36,6 +36,9 @@ class TripViewModel @Inject constructor(
     private var _tripStatus:Pair<Boolean,Boolean> = Pair(false,false)
     val tripStatus get() = _tripStatus
 
+    private var _timeAndDistance = MutableStateFlow<Pair<Int,Double>>(Pair(0,0.0))
+    val timeAndDistance get() = _timeAndDistance.asStateFlow()
+
     private fun <T> handleResponse(response: Response<T>): Resource<T>? {
         if (response.isSuccessful) {
             return response.body()?.let {
@@ -48,9 +51,10 @@ class TripViewModel @Inject constructor(
 
     fun directionsRequest(origin: LatLng, destination: LatLng) {
         launchOnBack {
-            val response = directionsResponseNoWaypoints(origin, destination)
-            Log.d("directionsRequest", "directionsRequest: $response")
-            _directions.emit(handleResponse<DirectionsResponse>(response))
+            var response = directionsResponseNoWaypoints(origin, destination)
+            var response1 = handleResponse<DirectionsResponse>(response)
+            Log.d("directionsRequest", "directionsRequest: $response1")
+            _directions.emit(response1)
         }
     }
 
@@ -74,5 +78,9 @@ class TripViewModel @Inject constructor(
 
     suspend fun setTripStatus(tripStatus:Pair<Boolean,Boolean>){
         this._tripStatus= tripStatus
+    }
+
+    suspend fun updateTripTimeAndDistance(time:Int,distance:Double){
+        _timeAndDistance.emit(Pair(time,distance))
     }
 }

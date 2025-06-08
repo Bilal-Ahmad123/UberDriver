@@ -11,7 +11,9 @@ import com.example.uber.data.remote.api.googleMaps.models.directionsResponse.Dis
 import com.example.uber.data.remote.api.googleMaps.models.directionsResponse.Duration
 import com.example.uberdriver.R
 import com.example.uberdriver.core.common.BitmapCreator
+import com.example.uberdriver.core.common.Helper
 import com.example.uberdriver.core.common.PolyUtilExtension
+import com.example.uberdriver.core.common.UiHelper
 import com.example.uberdriver.data.remote.api.backend.socket.ride.model.TripLocation
 import com.example.uberdriver.data.remote.api.backend.socket.trip.model.ReachedRider
 import com.example.uberdriver.presentation.driver.map.viewmodel.DriverViewModel
@@ -80,8 +82,8 @@ class RouteNavigationService(
                     loc, it
                 )
                 val trimmedPoints = routePoints?.subList(0, index)
-
                 trimmedPoints?.let { b ->
+                    getDistanceFromCurrentPointToDestination(trimmedPoints)
                     polyline?.points = b
                 }
                 trimmedPoints?.let { b ->
@@ -99,7 +101,6 @@ class RouteNavigationService(
         tripViewModel?.run {
             viewLifecycleOwner.lifecycleScope.launch {
                 directions.collectLatest {
-                    Log.d("DirectionsResponse", it?.data.toString())
                     if (it?.data!!.routes.isNotEmpty()) {
                         createRoute(
                             it.data!!.routes[0].overview_polyline!!.points,
@@ -131,6 +132,7 @@ class RouteNavigationService(
                 polyline = googleMap.get()?.addPolyline(it)
             }
             updateMapZoomLevel()
+            UiHelper.animateCameraToFillRoute(routePoints, googleMap.get()!!)
             this.distance = distance
             this.duration = duration
         }
@@ -283,7 +285,20 @@ class RouteNavigationService(
                         )
                     )
                 )
+                riderMarker?.remove()
             }
         }
     }
+
+    private fun getDistanceFromCurrentPointToDestination(
+        routePoints :MutableList<LatLng>
+    ) {
+        val distance = Helper.calculatePolylineDistance(routePoints)
+        val time = Helper.getUserFetchTime(distance)
+        viewLifecycleOwner.lifecycleScope.launch {
+            tripViewModel.updateTripTimeAndDistance(time,distance)
+        }
+    }
+
+
 }

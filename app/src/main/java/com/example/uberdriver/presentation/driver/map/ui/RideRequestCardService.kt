@@ -86,15 +86,11 @@ class RideRequestCardService(
     }
 
 
-    fun hideCardAndShowSheet() {
-        binding.get()?.content?.stopRippleAnimation()
-        binding.get()?.cardView?.visibility = View.GONE
-        SoundHelper.destroySoundInstance()
-    }
 
     fun hideCard() {
         binding.get()?.cardView?.visibility = View.GONE
         SoundHelper.destroySoundInstance()
+        binding.get()?.content?.stopRippleAnimation()
     }
 
     private fun setRideAcceptListener() {
@@ -112,6 +108,7 @@ class RideRequestCardService(
         rideViewModel.rideRequests.value?.let { ride ->
             locationViewModel.location.value?.let { loc ->
                 rideViewModel.rideStarted(true)
+                rideViewModel.setRideAccepted(true)
                 rideViewModel.acceptRideRequest(
                     AcceptRideRequest(
                         ride.rideId,

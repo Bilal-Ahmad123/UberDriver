@@ -33,6 +33,9 @@ class MapAndCardSharedViewModel @Inject constructor(dispatcher: IDispatchers) :
     private val _startUberBtnClicked = MutableSharedFlow<Boolean>()
     val startUberBtnClicked get() = _startUberBtnClicked.asSharedFlow()
 
+    private val _hideNavigateButton = MutableSharedFlow<Boolean>()
+    val hideNavigateButton get() = _hideNavigateButton.asSharedFlow()
+
     suspend fun setRideBtnClicked(value: Boolean) {
         acceptRideBtnClicked.emit(value)
     }
@@ -59,5 +62,9 @@ class MapAndCardSharedViewModel @Inject constructor(dispatcher: IDispatchers) :
 
     suspend fun setShowingRideRequests(value: Boolean) {
         _showingRideRequestCard.emit(value)
+    }
+
+    suspend fun setNavigateButtonStatus(value:Boolean){
+        _hideNavigateButton.emit(value)
     }
 }

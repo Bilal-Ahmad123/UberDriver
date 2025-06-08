@@ -117,7 +117,7 @@ dependencies {
     implementation ("com.skyfishjy.ripplebackground:library:1.0.1")
     implementation("com.google.maps.android:android-maps-utils:3.9.0")
     implementation("com.github.tintinscorpion:Dual-color-Polyline-Animation:1.2")
-
+    implementation ("com.ncorti:slidetoact:0.11.0")
 
 
 

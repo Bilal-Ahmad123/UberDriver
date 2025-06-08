@@ -31,8 +31,14 @@ class RideViewModel @Inject constructor(
     private var _currentRide:CurrentRide? = null
     val currentRide get() = _currentRide
 
+    private var _rideRequestOnScreen = MutableSharedFlow<Boolean>()
+    val rideRequestOnScreen get() = _rideRequestOnScreen
+
     private var _rideStarted= MutableStateFlow<Boolean>(false);
     val rideStarted get() = _rideStarted
+
+    private var _rideAccepted = MutableStateFlow<Boolean>(false);
+    val rideAccepted get() = _rideAccepted
 
     fun startObservingNearbyRideRequests(){
         launchOnBack {
@@ -56,6 +62,14 @@ class RideViewModel @Inject constructor(
 
     suspend fun rideStarted(value:Boolean){
         _rideStarted.emit(value)
+    }
+
+   suspend fun setRideOnScreenStatus(value:Boolean){
+       rideRequestOnScreen.emit(value)
+    }
+
+    suspend fun setRideAccepted(value:Boolean){
+        _rideAccepted.emit(value)
     }
 
 }

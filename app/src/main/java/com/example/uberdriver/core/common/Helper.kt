@@ -3,6 +3,8 @@ package com.example.uberdriver.core.common
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.SphericalUtil
 
 object Helper {
     fun isDarkMode(context: Context): Boolean {
@@ -36,6 +38,25 @@ object Helper {
             is Long -> sharedPref.getLong(key, defaultValue) as T
             else -> throw IllegalArgumentException("Unsupported type")
         }
+    }
+
+    fun covertMetersToMiles(value:Int):Double{
+        return String.format("%.1f",value / 1609.344).toDouble()
+    }
+
+    fun convertSecondsToMinutes(value:Int):Int{
+        return value / 60
+    }
+
+    fun calculatePolylineDistance(points:List<LatLng>):Double{
+        var totalDistance = 0.0
+        for(i in 0 until points.size - 2){
+            val start = points[i]
+            val end = points[i + 1]
+            val distance = SphericalUtil.computeDistanceBetween(start, end)
+            totalDistance += distance
+        }
+        return covertMetersToMiles(totalDistance.toInt())
     }
 
 }

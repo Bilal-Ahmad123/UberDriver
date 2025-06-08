@@ -65,14 +65,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var mLastLocation: Location? = null
     private var binding: FragmentMapBinding? = null
     private val socketViewModel: SocketViewModel by viewModels<SocketViewModel>()
-    private val rideViewModel: RideViewModel by viewModels<RideViewModel>()
+    private val rideViewModel: RideViewModel by activityViewModels<RideViewModel>()
     private val locationViewModel: LocationViewModel by activityViewModels<LocationViewModel>()
     private val driverRoomViewModel: DriverRoomViewModel by activityViewModels<DriverRoomViewModel>()
     private val driverViewModel: DriverViewModel by activityViewModels<DriverViewModel>()
     private val vehicleViewModel: VehicleViewModel by activityViewModels<VehicleViewModel>()
     private val googleViewModel: GoogleViewModel by viewModels<GoogleViewModel>()
     private val mapAndCardSharedViewModel: MapAndCardSharedViewModel by activityViewModels<MapAndCardSharedViewModel>()
-    private val tripViewModel: TripViewModel by viewModels<TripViewModel>()
+    private val tripViewModel: TripViewModel by activityViewModels<TripViewModel>()
     private var isGoButtonClicked: Boolean = false
     private var rideRequestCardService: RideRequestCardService? = null
     private var routeCreationHelper: RouteCreationHelper? = null
@@ -112,6 +112,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         observePickUpLocationReached()
         observeStartRideBtnClicked()
         observeRideStarted()
+        observeNavigateButtonVisibilityStatus()
     }
 
     private fun initializeCardService() {
@@ -333,6 +334,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             viewLifecycleOwner.lifecycleScope.launch {
                 rideRequests.collectLatest { it ->
                     it?.let {
+                        rideViewModel.setRideOnScreenStatus(true)
                         rideRequestCardService?.showCard(it)
                         locationViewModel.location.value?.let { loc ->
                             routeCreationHelper?.createRoute(
@@ -363,9 +365,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         job = viewLifecycleOwner.lifecycleScope.launch {
             delay(10000)
             mapAndCardSharedViewModel.setShowingRideRequests(false)
-            rideRequestCardService?.hideCardAndShowSheet()
+            rideRequestCardService?.hideCard()
             routeCreationHelper?.deleteEverythingOnMap()
             rideViewModel.rideRequests.emit(null)
+            rideViewModel.setRideOnScreenStatus(false)
         }
     }
 
@@ -375,6 +378,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 it?.let { t ->
                     if (t) {
                         hideCardAndOtherStuff()
+                        rideViewModel.setRideAccepted(true)
                         rideViewModel.rideRequests.value?.let { a ->
                             routeNavigationService?.createRoute(
                                 LatLng(
@@ -419,7 +423,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                     a.dropOffLongitude
                                 )
                             )
-                            rideViewModel.rideRequests.emit(null)
                         }
                     }
                 }
@@ -489,6 +492,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun toggleNavigateButton(value: Boolean) {
         binding?.navigate?.visibility = if (value) View.VISIBLE else View.GONE
     }
+
+    private fun observeNavigateButtonVisibilityStatus(){
+        viewLifecycleOwner.lifecycleScope.launch {
+            mapAndCardSharedViewModel.apply {
+                hideNavigateButton.collectLatest {
+                    if(rideViewModel.rideStarted.value){
+                        toggleNavigateButton(it)
+                    }
+                }
+            }
+        }
+    }
+
 
 
 }

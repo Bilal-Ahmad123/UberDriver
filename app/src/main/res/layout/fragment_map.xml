@@ -23,28 +23,27 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/navigate"
-        android:visibility="gone"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-        android:layout_width="@dimen/_150sdp"
+        android:layout_width="@dimen/_130sdp"
         android:layout_height="@dimen/_40sdp"
-        android:backgroundTint="@color/black"
-        android:insetLeft="0dp"
-        app:cornerRadius="@dimen/_20sdp"
-        android:insetTop="0dp"
         android:layout_gravity="bottom|end"
         android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_100sdp"
+        android:backgroundTint="@color/black"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
         android:insetRight="0dp"
         android:insetBottom="0dp"
-        app:iconPadding="@dimen/_6sdp"
-        app:icon="@drawable/baseline_navigation_24"
-        app:iconTint="@color/white"
-        app:iconSize="@dimen/_30sdp"
         android:text="Navigate"
-        android:layout_marginBottom="@dimen/_200sdp"
         android:textColor="@color/white"
+        android:elevation="0dp"
         android:textSize="@dimen/_12ssp"
-        />
-
+        app:cornerRadius="@dimen/_30sdp"
+        app:icon="@drawable/baseline_navigation_24"
+        app:iconGravity="textStart"
+        android:visibility="gone"
+        app:iconPadding="4dp"
+        app:iconSize="@dimen/_30sdp"
+        app:iconTint="@color/white" />
 
 
     <FrameLayout
@@ -279,7 +278,6 @@
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
 
 
     <LinearLayout
